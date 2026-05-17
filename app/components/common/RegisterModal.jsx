@@ -120,14 +120,14 @@ export default function RegisterModal() {
                 onClick={() => setView('selection')} 
                 style={{
                   position: 'absolute',
-                  top: '20px',
-                  left: '20px',
+                  top: '16px',
+                  left: '16px',
                   background: 'transparent',
                   border: '1px solid rgba(255, 255, 255, 0.15)',
                   color: 'rgba(255, 255, 255, 0.7)',
                   borderRadius: '20px',
-                  padding: '6px 14px',
-                  fontSize: '11px',
+                  padding: '5px 12px',
+                  fontSize: '10px',
                   fontWeight: '700',
                   letterSpacing: '0.05em',
                   textTransform: 'uppercase',
@@ -147,13 +147,13 @@ export default function RegisterModal() {
             {/* 1. SELECTION SCREEN VIEW */}
             {view === 'selection' && (
               <>
-                <div className="lux-modal-header" style={{ textAlign: 'center' }}>
-                  <p className="header-badge" style={{ margin: '0 auto 8px' }}>GET STARTED</p>
-                  <h3 style={{ fontFamily: 'var(--font-display)', color: '#fff', fontSize: '32px', fontWeight: '900', letterSpacing: '-0.02em', margin: '0 0 10px' }}>
+                <div className="lux-modal-header" style={{ textAlign: 'center', marginBottom: '0px' }}>
+                  <p className="header-badge" style={{ margin: '0 auto 6px' }}>GET STARTED</p>
+                  <h3 style={{ fontFamily: 'var(--font-display)', color: '#fff', fontSize: '28px', fontWeight: '900', letterSpacing: '-0.02em', margin: '0 0 6px' }}>
                     Choose Registration
                   </h3>
-                  <p className="lux-modal-desc" style={{ maxWidth: '480px', margin: '0 auto' }}>
-                    Select the option below that best fits your goals. Get booked as elite talent or request artists for your upcoming celebrations.
+                  <p className="lux-modal-desc" style={{ maxWidth: '440px', margin: '0 auto', fontSize: '13px', lineHeight: '1.4' }}>
+                    Book verified live singers, bands, or stage acts, or join our elite performers roster.
                   </p>
                 </div>
 
@@ -167,7 +167,7 @@ export default function RegisterModal() {
                     <div className="option-icon">🎉</div>
                     <h4>Register Event</h4>
                     <p>
-                      Looking to hire a live singer, band, or stage performer? Tell us your venue, date, vibe, and budget to book premium acts.
+                      Book verified live singers, bands, or DJs for your celebrations.
                     </p>
                     <button className="option-cta-btn btn-event">
                       Book an Artist →
@@ -183,7 +183,7 @@ export default function RegisterModal() {
                     <div className="option-icon">🎤</div>
                     <h4>Artist Roster</h4>
                     <p>
-                      Are you a professional live singer, band, DJ, or musician? Join our elite platform to showcase your acts and perform.
+                      Join our elite platform to get booked at premium venues.
                     </p>
                     <button className="option-cta-btn btn-artist">
                       Join Our Roster →
@@ -218,7 +218,7 @@ export default function RegisterModal() {
             {/* 2. ARTIST REGISTRATION VIEW */}
             {view === 'artist' && !submitted && (
               <>
-                <div className="lux-modal-header">
+                <div className="lux-modal-header" style={{ marginBottom: '16px' }}>
                   <p className="header-badge" style={{ background: 'rgba(0, 212, 255, 0.1)', color: '#00d4ff' }}>JOIN THE ELITE</p>
                   <h3 className="lux-modal-title">Artist Registration</h3>
                   <p className="lux-modal-desc">Showcase your talent to the world. Join Magnevents and perform at premium venues.</p>
@@ -286,7 +286,7 @@ export default function RegisterModal() {
                     <label>BIO & EXPERIENCE</label>
                     <textarea
                       ref={bioRef}
-                      rows="4" required
+                      rows="3" required
                       placeholder="Briefly describe your performances, experience, and what makes you unique..."
                       defaultValue=""
                     />
@@ -302,7 +302,7 @@ export default function RegisterModal() {
             {/* 3. EVENT REGISTRATION VIEW */}
             {view === 'event' && !submitted && (
               <>
-                <div className="lux-modal-header">
+                <div className="lux-modal-header" style={{ marginBottom: '16px' }}>
                   <p className="header-badge">DIRECT SUPPORT</p>
                   <h3 className="lux-modal-title">Register Event</h3>
                   <p className="lux-modal-desc">Tell us your vision, and we will find the perfect stage presence for you.</p>
@@ -411,7 +411,7 @@ export default function RegisterModal() {
                     </div>
                   </div>
 
-                  <div className="lux-modal-footer" style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '24px' }}>
+                  <div className="lux-modal-footer" style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '16px' }}>
                     <button type="submit" className="btn-submit-premium" disabled={isSubmitting}>
                       <span className="btn-text">{isSubmitting ? 'Processing...' : 'Request Event Booking'}</span>
                     </button>
@@ -421,10 +421,10 @@ export default function RegisterModal() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="btn-whatsapp-premium"
-                      style={{ height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '12px' }}
+                      style={{ height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '12px', fontSize: '13px' }}
                     >
-                      <span className="whatsapp-icon" style={{ marginRight: '8px', display: 'flex', alignItems: 'center' }}>
-                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                      <span className="whatsapp-icon" style={{ marginRight: '6px', display: 'flex', alignItems: 'center' }}>
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
                           <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.262 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.458L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.725 1.451 5.437 0 9.857-4.403 9.86-9.809.001-2.618-1.01-5.08-2.858-6.93C16.528 2.015 14.07 1.006 11.453 1.006c-5.434 0-9.852 4.403-9.855 9.81-.001 2.062.54 4.079 1.566 5.86l-.99 3.613 3.712-.977zm11.304-6.816c-.302-.15-1.788-.882-2.066-.983-.277-.101-.478-.15-.678.15-.2.3-.775.983-.95 1.185-.175.201-.35.227-.652.076-.302-.15-1.274-.469-2.427-1.498-.897-.8-1.502-1.788-1.678-2.09-.175-.302-.019-.465.132-.615.136-.135.302-.35.454-.526.15-.176.2-.302.302-.503.101-.2.05-.376-.026-.526-.075-.15-.678-1.636-.93-2.243-.244-.59-.493-.51-.678-.518-.176-.008-.377-.01-.578-.01-.2 0-.527.075-.803.376-.277.301-1.055 1.031-1.055 2.516 0 1.485 1.079 2.921 1.229 3.122.15.2 2.125 3.245 5.148 4.549.719.311 1.28.497 1.717.637.722.23 1.38.197 1.901.12.58-.087 1.788-.73 2.04-1.435.252-.703.252-1.306.176-1.435-.076-.13-.277-.201-.578-.352z"/>
                         </svg>
                       </span>
@@ -441,9 +441,22 @@ export default function RegisterModal() {
 
       {/* Internal Premium Options Styles */}
       <style jsx global>{`
+        /* Avoid top/bottom truncation on mobile viewports */
+        .lux-modal-root {
+          position: fixed;
+          inset: 0;
+          z-index: 10000;
+          display: flex;
+          align-items: flex-start !important;
+          justify-content: center;
+          padding: 24px 8px !important;
+          overflow-y: auto !important;
+        }
+
         .lux-modal-content.selection-view {
           max-width: 680px !important;
           padding: 40px !important;
+          margin-top: 20px;
         }
 
         .registration-options-grid {
@@ -569,26 +582,54 @@ export default function RegisterModal() {
           box-shadow: 0 8px 25px rgba(0, 212, 255, 0.4);
         }
 
-        /* Responsive styles */
+        /* Mobile specific style overrides - Increase width, decrease height, remove long text */
         @media (max-width: 680px) {
           .lux-modal-content.selection-view {
-            padding: 30px 20px !important;
-            margin: 16px !important;
-            max-width: calc(100% - 32px) !important;
+            padding: 24px 16px !important;
+            margin: 10px 4px !important;
+            max-width: calc(100% - 8px) !important;
+            width: calc(100% - 8px) !important;
+            border-radius: 20px !important;
           }
 
           .registration-options-grid {
             grid-template-columns: 1fr;
-            gap: 16px;
-            margin-top: 24px;
+            gap: 12px;
+            margin-top: 18px;
+            width: 100%;
           }
 
           .registration-option-card {
-            padding: 24px 20px;
+            padding: 16px 14px;
+            gap: 8px;
+            border-radius: 16px;
+          }
+
+          .option-icon {
+            font-size: 36px;
+          }
+
+          .registration-option-card h4 {
+            font-size: 18px;
           }
 
           .registration-option-card p {
+            font-size: 12px;
             min-height: auto;
+            line-height: 1.4;
+            color: rgba(255, 255, 255, 0.65);
+          }
+
+          .option-cta-btn {
+            padding: 10px 16px;
+            font-size: 12px;
+            margin-top: 4px;
+          }
+
+          .lux-modal-back-btn {
+            top: 12px !important;
+            left: 12px !important;
+            padding: 4px 10px !important;
           }
         }
       `}</style>
