@@ -32,7 +32,6 @@ export default function Nav() {
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [query, setQuery] = useState('');
   const [contactModalOpen, setContactModalOpen] = useState(false);
   const [modalType, setModalType] = useState('booking');
   const [selectedArtist, setSelectedArtist] = useState('');
@@ -59,10 +58,11 @@ export default function Nav() {
 
   function handleSearchSubmit(e) {
     e.preventDefault();
-    if (!query.trim()) return;
+    const currentQuery = searchRef.current?.value || '';
+    if (!currentQuery.trim()) return;
     setSearchOpen(false);
-    router.push(`/search?q=${encodeURIComponent(query.trim())}`);
-    setQuery('');
+    router.push(`/search?q=${encodeURIComponent(currentQuery.trim())}`);
+    if (searchRef.current) searchRef.current.value = '';
   }
 
   const openContactModal = (type) => {
@@ -139,8 +139,6 @@ export default function Nav() {
       <SearchOverlay
         isOpen={searchOpen}
         onClose={() => setSearchOpen(false)}
-        query={query}
-        onQueryChange={e => setQuery(e.target.value)}
         onSubmit={handleSearchSubmit}
         searchRef={searchRef}
       />

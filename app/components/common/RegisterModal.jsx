@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { bookingService } from '@/app/services/bookingService'
 import '@/app/styles/components/ContactModal.css'
@@ -9,14 +9,13 @@ export default function RegisterModal() {
   const [isOpen, setIsOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    category: '',
-    portfolio: '',
-    bio: ''
-  })
+
+  const nameRef = useRef(null)
+  const phoneRef = useRef(null)
+  const emailRef = useRef(null)
+  const categoryRef = useRef(null)
+  const portfolioRef = useRef(null)
+  const bioRef = useRef(null)
 
   useEffect(() => {
     const handleOpen = () => {
@@ -41,8 +40,16 @@ export default function RegisterModal() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setIsSubmitting(true)
+    const submissionData = {
+      name: nameRef.current?.value || '',
+      phone: phoneRef.current?.value || '',
+      email: emailRef.current?.value || '',
+      category: categoryRef.current?.value || '',
+      portfolio: portfolioRef.current?.value || '',
+      bio: bioRef.current?.value || ''
+    }
     try {
-      await bookingService.submitRequest({ ...formData, type: 'artist_registration' })
+      await bookingService.submitRequest({ ...submissionData, type: 'artist_registration' })
       setIsSubmitting(false)
       setSubmitted(true)
     } catch (error) {
@@ -94,17 +101,17 @@ export default function RegisterModal() {
                   <div className="lux-form-group">
                     <label>FULL NAME</label>
                     <input
+                      ref={nameRef}
                       type="text" required placeholder="e.g. Rahul Verma"
-                      value={formData.name}
-                      onChange={e => setFormData({...formData, name: e.target.value})}
+                      defaultValue=""
                     />
                   </div>
                   <div className="lux-form-group">
                     <label>PHONE NUMBER</label>
                     <input
+                      ref={phoneRef}
                       type="tel" required placeholder="+91 9XXX-XXXXXX"
-                      value={formData.phone}
-                      onChange={e => setFormData({...formData, phone: e.target.value})}
+                      defaultValue=""
                     />
                   </div>
                 </div>
@@ -112,9 +119,9 @@ export default function RegisterModal() {
                 <div className="lux-form-group">
                   <label>EMAIL ADDRESS</label>
                   <input
+                    ref={emailRef}
                     type="email" required placeholder="name@email.in"
-                    value={formData.email}
-                    onChange={e => setFormData({...formData, email: e.target.value})}
+                    defaultValue=""
                   />
                 </div>
 
@@ -122,9 +129,9 @@ export default function RegisterModal() {
                   <div className="lux-form-group">
                     <label>ARTIST CATEGORY</label>
                     <select
+                      ref={categoryRef}
                       required
-                      value={formData.category}
-                      onChange={e => setFormData({...formData, category: e.target.value})}
+                      defaultValue=""
                     >
                       <option value="">Select Type</option>
                       <option value="singer">Singer</option>
@@ -140,9 +147,9 @@ export default function RegisterModal() {
                   <div className="lux-form-group">
                     <label>PORTFOLIO / SOCIAL LINK</label>
                     <input
+                      ref={portfolioRef}
                       type="url" required placeholder="Instagram, YouTube or Website"
-                      value={formData.portfolio}
-                      onChange={e => setFormData({...formData, portfolio: e.target.value})}
+                      defaultValue=""
                     />
                   </div>
                 </div>
@@ -150,10 +157,10 @@ export default function RegisterModal() {
                 <div className="lux-form-group">
                   <label>BIO & EXPERIENCE</label>
                   <textarea
+                    ref={bioRef}
                     rows="4" required
                     placeholder="Briefly describe your performances, experience, and what makes you unique..."
-                    value={formData.bio}
-                    onChange={e => setFormData({...formData, bio: e.target.value})}
+                    defaultValue=""
                   />
                 </div>
 
