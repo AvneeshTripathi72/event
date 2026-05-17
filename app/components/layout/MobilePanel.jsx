@@ -162,7 +162,7 @@ export default function MobilePanel({ isOpen, onClose, isLight, pathname, onOpen
           })}
         </nav>
 
-        <div className="lux-mobile-actions" style={{ marginTop: '32px', display: 'flex', flexDirection: 'column', gap: '12px', position: 'relative' }}>
+        <div className="lux-mobile-actions" style={{ marginTop: '36px', display: 'flex', flexDirection: 'column', gap: '16px', position: 'relative' }}>
           <button
             onClick={handleInstallClick}
             className="lux-mobile-cta pwa-install-trigger"
