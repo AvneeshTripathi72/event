@@ -35,6 +35,8 @@ export default function Nav() {
   const [contactModalOpen, setContactModalOpen] = useState(false);
   const [modalType, setModalType] = useState('booking');
   const [selectedArtist, setSelectedArtist] = useState('');
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [selectedService, setSelectedService] = useState(null);
 
   const searchRef = useRef(null);
   const scrolled = useScrolled(20);
@@ -47,8 +49,16 @@ export default function Nav() {
   useEffect(() => {
     const handleOpenModal = (e) => {
       if (e.detail?.type) setModalType(e.detail.type);
+      
       if (e.detail?.artist) setSelectedArtist(e.detail.artist);
       else setSelectedArtist('');
+
+      if (e.detail?.pricingPlan) setSelectedPlan(e.detail.pricingPlan);
+      else setSelectedPlan(null);
+
+      if (e.detail?.service) setSelectedService(e.detail.service);
+      else setSelectedService(null);
+
       setContactModalOpen(true);
       setMenuOpen(false);
     };
@@ -68,6 +78,8 @@ export default function Nav() {
   const openContactModal = (type) => {
     setModalType(type);
     setSelectedArtist('');
+    setSelectedPlan(null);
+    setSelectedService(null);
     setContactModalOpen(true);
   };
 
@@ -149,6 +161,8 @@ export default function Nav() {
         onClose={() => setContactModalOpen(false)}
         initialType={modalType}
         initialArtist={selectedArtist}
+        initialPlan={selectedPlan}
+        initialService={selectedService}
       />
     </>
   );

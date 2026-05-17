@@ -5,27 +5,56 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { bookingService } from '@/app/services/bookingService'
 import '@/app/styles/components/ContactModal.css'
 
-export default function ContactModal({ isOpen, onClose, initialType = 'booking', initialArtist = null }) {
+export default function ContactModal({ isOpen, onClose, initialType = 'booking', initialArtist = null, initialPlan = null, initialService = null }) {
   const [formType, setFormType] = useState(initialType)
   const [selectedArtistTypes, setSelectedArtistTypes] = useState([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
 
+  const [selectedBudget, setSelectedBudget] = useState('')
+  const [selectedEventType, setSelectedEventType] = useState('')
+
   const nameRef = useRef(null)
   const phoneRef = useRef(null)
   const emailRef = useRef(null)
-  const eventTypeRef = useRef(null)
   const dateRef = useRef(null)
   const locationRef = useRef(null)
-  const budgetRef = useRef(null)
 
   useEffect(() => {
     if (isOpen) {
       setFormType(initialType)
       setSubmitted(false)
-      setSelectedArtistTypes([])
       document.body.style.overflow = 'hidden'
       document.body.classList.add('modal-open')
+
+      // Smart auto-fill depending on selected item details
+      if (initialPlan) {
+        const planName = initialPlan.name.toLowerCase();
+        if (planName.includes('singer')) {
+          setSelectedArtistTypes(['Singer'])
+          setSelectedBudget('5k_10k')
+        } else if (planName.includes('duo')) {
+          setSelectedArtistTypes(['Singer', 'Musician'])
+          setSelectedBudget('10k_20k')
+        } else if (planName.includes('band')) {
+          setSelectedArtistTypes(['Music Band'])
+          setSelectedBudget('20k_35k')
+        }
+        setSelectedEventType('Live Booking')
+      } else if (initialService) {
+        setSelectedArtistTypes([])
+        setSelectedBudget('')
+        setSelectedEventType(initialService.title)
+      } else if (initialArtist) {
+        const tag = initialArtist.category || '';
+        if (tag) setSelectedArtistTypes([tag])
+        setSelectedBudget('')
+        setSelectedEventType('Artist Booking')
+      } else {
+        setSelectedArtistTypes([])
+        setSelectedBudget('')
+        setSelectedEventType('')
+      }
     } else {
       document.body.style.overflow = ''
       document.body.classList.remove('modal-open')
@@ -34,7 +63,7 @@ export default function ContactModal({ isOpen, onClose, initialType = 'booking',
       document.body.style.overflow = ''
       document.body.classList.remove('modal-open')
     }
-  }, [isOpen, initialType])
+  }, [isOpen, initialType, initialPlan, initialService, initialArtist])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -44,12 +73,14 @@ export default function ContactModal({ isOpen, onClose, initialType = 'booking',
       name: nameRef.current?.value || '',
       phone: phoneRef.current?.value || '',
       email: emailRef.current?.value || '',
-      eventType: eventTypeRef.current?.value || '',
+      eventType: selectedEventType,
       date: dateRef.current?.value || '',
       location: locationRef.current?.value || '',
       artistType: selectedArtistTypes,
-      budget: budgetRef.current?.value || '',
-      selectedArtist: initialArtist
+      budget: selectedBudget,
+      selectedArtist: initialArtist,
+      selectedPlan: initialPlan,
+      selectedService: initialService
     }
 
     try {
@@ -62,10 +93,10 @@ export default function ContactModal({ isOpen, onClose, initialType = 'booking',
         if (nameRef.current) nameRef.current.value = ''
         if (phoneRef.current) phoneRef.current.value = ''
         if (emailRef.current) emailRef.current.value = ''
-        if (eventTypeRef.current) eventTypeRef.current.value = ''
         if (dateRef.current) dateRef.current.value = ''
         if (locationRef.current) locationRef.current.value = ''
-        if (budgetRef.current) budgetRef.current.value = ''
+        setSelectedEventType('')
+        setSelectedBudget('')
         setSelectedArtistTypes([])
       }, 2500)
     } catch (error) {
@@ -111,6 +142,24 @@ export default function ContactModal({ isOpen, onClose, initialType = 'booking',
               <div style={{ marginTop: '12px', padding: '10px 16px', background: 'rgba(255,224,50,0.1)', border: '1px solid rgba(255,224,50,0.2)', borderRadius: '8px', display: 'inline-block' }}>
                 <span style={{ color: '#FFE032', fontSize: '14px', fontWeight: '500' }}>
                   Booking Inquiry for: {typeof initialArtist === 'string' ? initialArtist : initialArtist?.name || 'Artist'}
+                </span>
+              </div>
+            ) : initialPlan ? (
+              <div style={{ marginTop: '12px', padding: '10px 16px', background: 'rgba(255,224,50,0.1)', border: '1px solid rgba(255,224,50,0.2)', borderRadius: '8px', display: 'inline-block', width: '100%', textAlign: 'left' }}>
+                <span style={{ color: '#FFE032', fontSize: '15px', fontWeight: '700', display: 'block', marginBottom: '4px' }}>
+                  Selected Package: {initialPlan.name} ({initialPlan.price})
+                </span>
+                <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '12px', display: 'block' }}>
+                  Tagline: {initialPlan.tagline}
+                </span>
+              </div>
+            ) : initialService ? (
+              <div style={{ marginTop: '12px', padding: '10px 16px', background: 'rgba(255,224,50,0.1)', border: '1px solid rgba(255,224,50,0.2)', borderRadius: '8px', display: 'inline-block', width: '100%', textAlign: 'left' }}>
+                <span style={{ color: '#FFE032', fontSize: '15px', fontWeight: '700', display: 'block' }}>
+                  Selected Service: {initialService.title}
+                </span>
+                <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '12px', display: 'block', marginTop: '4px' }}>
+                  {initialService.desc}
                 </span>
               </div>
             ) : (
@@ -166,9 +215,9 @@ export default function ContactModal({ isOpen, onClose, initialType = 'booking',
                 <div className="lux-form-group">
                   <label>Event Type</label>
                   <input
-                    ref={eventTypeRef}
                     type="text" required placeholder="Wedding, Sangeet, Corporate..."
-                    defaultValue=""
+                    value={selectedEventType}
+                    onChange={(e) => setSelectedEventType(e.target.value)}
                   />
                 </div>
               </div>
@@ -216,9 +265,9 @@ export default function ContactModal({ isOpen, onClose, initialType = 'booking',
                 <div className="lux-form-group">
                   <label>Budget range</label>
                   <select
-                    ref={budgetRef}
                     required
-                    defaultValue=""
+                    value={selectedBudget}
+                    onChange={(e) => setSelectedBudget(e.target.value)}
                   >
                     <option value="" disabled>Select Budget</option>
                     <option value="below_5k">below 5000</option>

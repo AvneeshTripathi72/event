@@ -32,7 +32,20 @@ export default function PricingCard({ plan, index }) {
         ))}
       </ul>
 
-      <button onClick={() => window.dispatchEvent(new CustomEvent('open-contact-modal'))} className={`card-btn ${plan.popular ? 'btn-primary' : 'btn-outline'}`}>
+      <button 
+        onClick={() => window.dispatchEvent(new CustomEvent('open-contact-modal', { 
+          detail: { 
+            type: 'booking', 
+            pricingPlan: {
+              name: plan.name,
+              price: plan.price,
+              tagline: plan.tagline,
+              features: plan.features
+            } 
+          } 
+        }))} 
+        className={`card-btn ${plan.popular ? 'btn-primary' : 'btn-outline'}`}
+      >
         Book now
       </button>
     </motion.div>

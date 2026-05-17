@@ -25,7 +25,20 @@ export default function ServiceCard({ service, index }) {
       <div className="service-content">
         <h3>{service.title}</h3>
         <p>{service.desc}</p>
-        <button onClick={() => window.dispatchEvent(new CustomEvent('open-contact-modal'))} className="service-action-btn">Check Availability</button>
+        <button 
+          onClick={() => window.dispatchEvent(new CustomEvent('open-contact-modal', { 
+            detail: { 
+              type: 'booking', 
+              service: {
+                title: service.title,
+                desc: service.desc
+              } 
+            } 
+          }))} 
+          className="service-action-btn"
+        >
+          Check Availability
+        </button>
       </div>
     </motion.article>
   )

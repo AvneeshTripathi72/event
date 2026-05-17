@@ -69,6 +69,34 @@ Artist Name:    ${artistName}
 `;
       }
 
+      // Add Selected Package/Pricing Plan details block
+      let planDetailsString = '';
+      if (data.selectedPlan && typeof data.selectedPlan === 'object') {
+        const p = data.selectedPlan;
+        planDetailsString = `
+========================================
+📦 SELECTED PRICING PACKAGE
+========================================
+Package Name:   ${p.name || 'N/A'}
+Starts From:    ${p.price || 'N/A'}
+Tagline:        ${p.tagline || 'N/A'}
+Features:       ${p.features && p.features.length > 0 ? p.features.join(', ') : 'N/A'}
+`;
+      }
+
+      // Add Selected Service details block
+      let serviceDetailsString = '';
+      if (data.selectedService && typeof data.selectedService === 'object') {
+        const s = data.selectedService;
+        serviceDetailsString = `
+========================================
+🛠️ SELECTED SERVICE DETAILS
+========================================
+Service Title:  ${s.title || 'N/A'}
+Description:    ${s.desc || 'N/A'}
+`;
+      }
+
       emailBody = `
 You have received a new inquiry from Magnevents!
 
@@ -92,7 +120,7 @@ Budget:         ${data.budget || 'N/A'}
 📝 ADDITIONAL MESSAGE
 ========================================
 ${data.message || 'No additional message provided.'}
-${artistDetailsString}
+${artistDetailsString}${planDetailsString}${serviceDetailsString}
       `;
     }
 
