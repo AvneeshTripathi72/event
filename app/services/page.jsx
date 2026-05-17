@@ -809,13 +809,9 @@ export default function ServicesPage() {
 
         {/* HIGH-END INTERACTIVE OPTION GRID (FULLY WRAPPING FOR ULTIMATE VISIBILITY) */}
         <section 
+          className="lux-filter-section"
           style={{ 
-            display: 'flex', 
-            flexDirection: 'column',
-            alignItems: 'center',
-            marginBottom: isMobile ? '30px' : '50px',
-            width: '100%',
-            padding: '0 16px'
+            marginBottom: isMobile ? '30px' : '50px'
           }}
         >
           {/* Elegant header instruction for high usability */}

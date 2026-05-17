@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter, usePathname } from 'next/navigation'
-import { HomeIcon, ServicesIcon, AboutIcon, ContactIcon } from '@/app/components/icons/NavigationIcons'
+import { HomeIcon, ServicesIcon, AboutIcon, ContactIcon, RegisterIcon } from '@/app/components/icons/NavigationIcons'
 
 function Tab({ path, icon, label, onNavigate, isActive }) {
   const iconColor = isActive ? '#FFE032' : '#8a8f98'
@@ -63,9 +63,18 @@ export default function BottomNav() {
         <Tab path="/services" icon={(color) => <ServicesIcon color={color} />} label="Services" onNavigate={(p) => router.push(p)} isActive={active('/services')} />
         <Tab path="/blog-post" icon={(color) => <AboutIcon color={color} />} label="Blog" onNavigate={(p) => router.push(p)} isActive={active('/blog-post')} />
         <Tab
+          path="/register"
+          icon={(color) => <RegisterIcon color={color} />}
+          label="Register"
+          onNavigate={(p) => {
+            window.dispatchEvent(new CustomEvent('open-register-modal'));
+          }}
+          isActive={active('/register')}
+        />
+        <Tab
           path="/contact"
           icon={(color) => <ContactIcon color={color} />}
-          label="Contact Us"
+          label="Contact"
           onNavigate={(p) => {
             window.dispatchEvent(new CustomEvent('open-contact-modal', { detail: { type: 'contact' } }));
           }}

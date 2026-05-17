@@ -113,9 +113,10 @@ export default function Nav() {
 
             <button
               onClick={() => window.dispatchEvent(new CustomEvent('open-register-modal'))}
-              className="lux-nav-cta secondary"
+              className="lux-nav-cta secondary lux-nav-register-btn"
             >
-              Artist Register
+              <span className="cta-long-text">Register</span>
+              <span className="cta-short-text">Register</span>
             </button>
 
             <button className={`lux-hamburger ${menuOpen ? 'is-open' : ''}`} onClick={() => setMenuOpen(!menuOpen)}>

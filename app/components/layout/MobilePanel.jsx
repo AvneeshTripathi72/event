@@ -133,7 +133,7 @@ export default function MobilePanel({ isOpen, onClose, isLight, pathname, onOpen
             }}
             className="lux-mobile-cta"
           >
-            Artist Register
+            Register
           </button>
 
           {showiOSGuide && (

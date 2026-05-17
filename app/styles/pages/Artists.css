@@ -22,9 +22,19 @@
   padding: 20px 0;
   overflow-x: auto;
   scrollbar-width: none;
+  width: 100%;
 }
 
 .artists-filters::-webkit-scrollbar { display: none; }
+
+@media (max-width: 640px) {
+  .artists-filters {
+    justify-content: flex-start !important;
+    padding: 16px !important;
+    gap: 8px !important;
+    -webkit-overflow-scrolling: touch;
+  }
+}
 
 .filter-btn {
   padding: 12px 28px;

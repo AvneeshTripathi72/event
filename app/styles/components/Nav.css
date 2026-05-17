@@ -241,50 +241,100 @@
 
 .lux-hamburger {
   display: none;
-  flex-direction: column;
-  gap: 4px;
-  padding: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 10001;
+  width: 32px;
+  height: 32px;
+  position: relative;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lux-hamburger span {
+  display: block;
+  position: absolute;
+  left: 5px;
+  width: 22px;
+  height: 2px;
+  background-color: var(--text-main, #ffffff);
+  border-radius: var(--radius-full, 2px);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.lux-hamburger span:nth-child(1) {
+  top: 10px;
+}
+.lux-hamburger span:nth-child(2) {
+  top: 15px;
+}
+.lux-hamburger span:nth-child(3) {
+  top: 20px;
+}
+
+.lux-hamburger.is-open span:nth-child(1) {
+  transform: translateY(5px) rotate(45deg);
+  background-color: var(--brand-primary, #FFE032);
+}
+.lux-hamburger.is-open span:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+.lux-hamburger.is-open span:nth-child(3) {
+  transform: translateY(-5px) rotate(-45deg);
+  background-color: var(--brand-primary, #FFE032);
+}
+
+.cta-short-text {
+  display: none;
 }
 
 @media (max-width: 1024px) {
   .lux-nav-center { display: none; }
-  .lux-hamburger { display: flex; order: 3; }
+  .lux-hamburger { display: block; order: 3; }
 
   .lux-nav-cta {
-    display: flex;
-    padding: 6px 12px;
-    font-size: 10px;
-    height: 32px;
+    display: none !important;
+  }
+
+  .lux-nav-register-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px !important;
+    font-size: 0.75rem !important;
+    border-radius: 20px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.05em !important;
+    margin-right: 8px;
+  }
+
+  .lux-nav-register-btn .cta-long-text {
+    display: none;
+  }
+
+  .lux-nav-register-btn .cta-short-text {
+    display: inline-block;
   }
 }
 
 @media (max-width: 768px) {
   .lux-nav {
-    padding: 0 12px;
+    padding: 0 16px;
     height: 68px !important;
   }
   .lux-nav-brand {
-    transform: scale(0.85);
+    transform: scale(0.9);
     transform-origin: left center;
   }
   .lux-nav-right {
-    gap: 6px;
+    gap: 12px;
     flex-grow: 1;
     justify-content: flex-end;
   }
-  .lux-nav-cta {
-    display: inline-flex !important;
-    padding: 6px 10px !important;
-    font-size: 9px !important;
-    font-weight: 800 !important;
-    height: 30px !important;
-    line-height: 1 !important;
-    align-items: center;
-    border-radius: 100px !important;
-    letter-spacing: 0.02em !important;
-  }
   .lux-hamburger {
-    display: flex !important;
+    display: block !important;
     order: 3;
     padding: 4px !important;
     margin-left: 2px;
@@ -293,18 +343,13 @@
 
 @media (max-width: 480px) {
   .lux-nav {
-    padding: 0 8px;
+    padding: 0 12px;
   }
   .lux-nav-brand {
-    transform: scale(0.78);
-  }
-  .lux-nav-cta {
-    padding: 5px 8px !important;
-    font-size: 8px !important;
-    height: 26px !important;
+    transform: scale(0.82);
   }
   .lux-nav-right {
-    gap: 4px;
+    gap: 8px;
   }
 }
 
