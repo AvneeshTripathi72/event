@@ -82,6 +82,7 @@ export default function ArtistCard({ artist, onBook }) {
       <AnimatePresence>
         {showDetails && (
           <div className="artist-details-overlay" onClick={() => setShowDetails(false)}>
+            <button className="proper-close-btn" onClick={() => setShowDetails(false)}>&times;</button>
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -89,7 +90,6 @@ export default function ArtistCard({ artist, onBook }) {
               className="proper-desktop-modal"
               onClick={e => e.stopPropagation()}
             >
-              <button className="proper-close-btn" onClick={() => setShowDetails(false)}>&times;</button>
 
               <div className="proper-modal-content">
 

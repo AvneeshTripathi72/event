@@ -8,6 +8,7 @@ import { NAV_LINKS } from '@/app/constants'
 export default function MobilePanel({ isOpen, onClose, isLight, pathname, onOpenContactModal }) {
   const [showiOSGuide, setShowiOSGuide] = useState(false)
   const [isInstallable, setIsInstallable] = useState(false)
+  const [expandedCategory, setExpandedCategory] = useState(false)
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.deferredPrompt) {
@@ -71,34 +72,82 @@ export default function MobilePanel({ isOpen, onClose, isLight, pathname, onOpen
           </button>
         </div>
 
-        {NAV_LINKS.map(link => (
-          <div key={link.label}>
-            <Link
-              href={link.label === 'Contact Us' ? '#' : link.path}
-              className={`lux-mobile-link ${isLinkActive(link.path) ? 'is-active' : ''}`}
-              onClick={(e) => {
-                if (link.label === 'Contact Us') {
-                  e.preventDefault();
-                  onOpenContactModal('contact');
-                  onClose();
-                } else {
-                  onClose();
-                }
-              }}
-            >
-              {link.label}
-            </Link>
-            {link.children && (
-              <div className="lux-mobile-submenu">
-                {link.children.map(child => (
-                  <Link key={child.path} href={child.path} onClick={onClose}>
-                    {child.label}
-                  </Link>
-                ))}
+        {NAV_LINKS.map(link => {
+          const isCategory = link.label.toLowerCase() === 'category';
+
+          if (isCategory) {
+            return (
+              <div key={link.label}>
+                <button
+                  type="button"
+                  className={`lux-mobile-link ${expandedCategory ? 'is-active' : ''}`}
+                  onClick={() => setExpandedCategory(!expandedCategory)}
+                  style={{
+                    width: '100%',
+                    textAlign: 'left',
+                    background: 'transparent',
+                    border: 'none',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                    outline: 'none',
+                    WebkitTapHighlightColor: 'transparent'
+                  }}
+                >
+                  <span>{link.label}</span>
+                  <span style={{ fontSize: '11px', transition: 'transform 0.3s ease', transform: expandedCategory ? 'rotate(180deg)' : 'rotate(0deg)', opacity: 0.7 }}>
+                    ▼
+                  </span>
+                </button>
+
+                {expandedCategory && (
+                  <div className="lux-mobile-submenu">
+                    <Link
+                      href="/artists"
+                      onClick={onClose}
+                      style={{
+                        fontWeight: 'bold',
+                        color: 'var(--brand-gold, #FFE032)',
+                        borderBottom: '1px dashed rgba(255, 224, 50, 0.2)',
+                        paddingBottom: '8px',
+                        marginBottom: '4px',
+                        display: 'block'
+                      }}
+                    >
+                      All Categories 📑
+                    </Link>
+                    {link.children.map(child => (
+                      <Link key={child.path} href={child.path} onClick={onClose}>
+                        {child.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        ))}
+            );
+          }
+
+          return (
+            <div key={link.label}>
+              <Link
+                href={link.label === 'Contact Us' ? '#' : link.path}
+                className={`lux-mobile-link ${isLinkActive(link.path) ? 'is-active' : ''}`}
+                onClick={(e) => {
+                  if (link.label === 'Contact Us') {
+                    e.preventDefault();
+                    onOpenContactModal('contact');
+                    onClose();
+                  } else {
+                    onClose();
+                  }
+                }}
+              >
+                {link.label}
+              </Link>
+            </div>
+          );
+        })}
 
         <div className="lux-mobile-actions" style={{ marginTop: '32px', display: 'flex', flexDirection: 'column', gap: '12px', position: 'relative' }}>
           <button
