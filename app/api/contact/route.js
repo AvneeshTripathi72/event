@@ -133,9 +133,13 @@ ${artistDetailsString}${planDetailsString}${serviceDetailsString}
     };
 
 
-    await transporter.sendMail(mailOptions);
+    transporter.sendMail(mailOptions).then(() => {
+      console.log("Email dispatched successfully in background.");
+    }).catch(err => {
+      console.error("Background email sending error:", err);
+    });
 
-    return new Response(JSON.stringify({ success: true, message: 'Email sent successfully!' }), {
+    return new Response(JSON.stringify({ success: true, message: 'Email request received!' }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     });
