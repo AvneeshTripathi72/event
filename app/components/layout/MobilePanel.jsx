@@ -81,7 +81,7 @@ export default function MobilePanel({ isOpen, onClose, isLight, pathname, onOpen
                   e.preventDefault();
                   onOpenContactModal('contact');
                   onClose();
-                } else if (!link.children) {
+                } else {
                   onClose();
                 }
               }}

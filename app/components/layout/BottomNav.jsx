@@ -155,6 +155,11 @@ export default function BottomNav() {
             display: none !important;
           }
         }
+
+        body.modal-open .booking-bottom-nav,
+        body.modal-open .booking-bottom-nav-spacer {
+          display: none !important;
+        }
       `}</style>
     </>
   )

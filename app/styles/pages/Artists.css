@@ -154,12 +154,16 @@
 
 .artist-details-overlay {
   position: fixed !important; inset: 0 !important;
-  background: rgba(0, 0, 0, 0.4) !important;
-  backdrop-filter: blur(50px);
-  -webkit-backdrop-filter: blur(50px);
+  background: rgba(0, 0, 0, 0.5) !important;
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
   z-index: 999999999 !important;
-  display: flex; align-items: center; justify-content: center;
+  display: flex; 
+  align-items: flex-start !important;
+  justify-content: center;
   padding: 40px 20px;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
 }
 
 .proper-desktop-modal {
@@ -255,4 +259,57 @@
   .proper-modal-left { padding: 40px 20px; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.05); }
   .proper-modal-right { padding: 40px 30px; }
   .proper-avatar-wrap { width: 140px; height: 140px; }
+}
+
+@media (max-width: 600px) {
+  .artist-details-overlay {
+    padding: 20px 10px !important;
+  }
+  .proper-desktop-modal {
+    max-width: 100% !important;
+    margin: 80px 10px 40px !important; /* Clear the top nav bar header completely */
+    border-radius: 24px !important;
+    min-height: auto !important;
+  }
+  .proper-close-btn {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    width: 44px !important;
+    height: 44px !important;
+    font-size: 24px !important;
+    background: rgba(0, 0, 0, 0.8) !important;
+    border: 2px solid rgba(255, 255, 255, 0.4) !important;
+    color: #fff !important;
+    z-index: 9999999999 !important; /* Ensure it stays fully visible above everything */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+  }
+  .proper-modal-left {
+    padding: 30px 16px 20px !important;
+  }
+  .proper-modal-right {
+    padding: 24px 20px 80px !important; /* Ensure bottom scrolling spacer is active */
+    gap: 24px !important;
+  }
+  .proper-name {
+    font-size: 28px !important;
+  }
+  .proper-info-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  .proper-book-btn {
+    height: 52px !important;
+    font-size: 14px !important;
+  }
+  .proper-avatar-wrap {
+    width: 120px !important;
+    height: 120px !important;
+    margin-bottom: 20px !important;
+  }
+}
+
+body.modal-open .booking-bottom-nav,
+body.modal-open .booking-bottom-nav-spacer {
+  display: none !important;
 }
