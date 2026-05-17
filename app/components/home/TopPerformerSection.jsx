@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import FadeSection from '@/app/components/common/FadeSection'
@@ -9,10 +9,19 @@ import { ARTIST_OF_MONTH } from '@/app/constants'
 import { formatINR } from '@/app/utils/formatters'
 import { supabase } from '@/app/lib/supabase'
 
-export default function TopPerformerSection() {
+// 🧠 In-memory Main Memory Cache for the Top Performer Artist Pick
+let cachedArtistOfMonth = null;
+
+function TopPerformerSection() {
   const [artist, setArtist] = useState(ARTIST_OF_MONTH);
 
   useEffect(() => {
+    // Return cached data from main memory instantly if already loaded
+    if (cachedArtistOfMonth) {
+      setArtist(cachedArtistOfMonth);
+      return;
+    }
+
     const fetchArtistOfMonth = async () => {
       try {
         const { data, error } = await supabase
@@ -35,7 +44,7 @@ export default function TopPerformerSection() {
              genres = data.sub_category.split(',').map(g => g.trim().toUpperCase());
           }
 
-          setArtist({
+          const parsedArtist = {
             name: data.name ?? ARTIST_OF_MONTH.name,
             image: data.artist_images?.[0]?.image_url ?? ARTIST_OF_MONTH.image,
             genres: genres,
@@ -43,7 +52,11 @@ export default function TopPerformerSection() {
             exclusivePrice: data.exclusive_price ?? data.price_min ?? ARTIST_OF_MONTH.exclusivePrice,
             rating: data.rating ?? ARTIST_OF_MONTH.rating,
             bookings: data.successful_bookings ?? ARTIST_OF_MONTH.bookings,
-          });
+          };
+
+          // Store in main memory cache
+          cachedArtistOfMonth = parsedArtist;
+          setArtist(parsedArtist);
         }
       } catch (err) {
         console.error('Error fetching artist of the month:', err);
@@ -111,3 +124,6 @@ export default function TopPerformerSection() {
     </FadeSection>
   )
 }
+
+// 🧠 Memoize in Main Memory to prevent rediffing and CPU lag on mobile
+export default React.memo(TopPerformerSection);

@@ -47,13 +47,22 @@ body {
   color: var(--text-main);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-
-  scrollbar-width: none;
-  -ms-overflow-style: none;
 }
 
+/* 🚫 HIDE ALL SCROLLBARS GLOBALLY EVERYWHERE FOR CLEANEST IMMERSIVE UX */
+* {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
 ::-webkit-scrollbar {
-  display: none;
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 h1, h2, h3, h4, h5, h6 {

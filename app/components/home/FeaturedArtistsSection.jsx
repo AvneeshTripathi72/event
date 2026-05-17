@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
@@ -9,7 +9,7 @@ import TiltCard from '@/app/components/common/TiltCard'
 import Stars from '@/app/components/common/Stars'
 import { FEATURED_ARTISTS } from '@/app/constants'
 
-export default function FeaturedArtistsSection() {
+function FeaturedArtistsSection() {
   const [pauseFeatured, setPauseFeatured] = useState(false)
   const featuredRef = useRef(null)
 
@@ -166,3 +166,5 @@ export default function FeaturedArtistsSection() {
     </FadeSection>
   )
 }
+
+export default React.memo(FeaturedArtistsSection);
