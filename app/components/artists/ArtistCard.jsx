@@ -1,14 +1,20 @@
 "use client";
 
 import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export default function ArtistCard({ artist, onBook }) {
   const [imageError, setImageError] = useState(false)
   const [showDetails, setShowDetails] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   const firstLetter = artist.name ? artist.name.charAt(0).toUpperCase() : 'A'
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     if (showDetails) {
@@ -79,108 +85,144 @@ export default function ArtistCard({ artist, onBook }) {
         </div>
       </motion.div>
 
-      <AnimatePresence>
-        {showDetails && (
-          <div className="artist-details-overlay" onClick={() => setShowDetails(false)}>
-            <button className="proper-close-btn" onClick={() => setShowDetails(false)}>&times;</button>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="proper-desktop-modal"
-              onClick={e => e.stopPropagation()}
-            >
+      {mounted && createPortal(
+        <AnimatePresence>
+          {showDetails && (
+            <div className="artist-details-overlay" onClick={() => setShowDetails(false)}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="proper-desktop-modal"
+                onClick={e => e.stopPropagation()}
+              >
+                <button className="proper-close-btn" onClick={() => setShowDetails(false)}>&times;</button>
 
-              <div className="proper-modal-content">
+                <div className="proper-modal-content">
 
-                <div className="proper-modal-left">
-                  <div className="proper-avatar-wrap">
-                    <div className="proper-avatar-img" style={{ position: 'relative', overflow: 'hidden' }}>
-                      {(!artist.img || imageError) ? (
-                        <span className="placeholder-large">{firstLetter}</span>
-                      ) : (
-                        <Image
-                          src={artist.img}
-                          alt={artist.name}
-                          fill
-                          sizes="400px"
-                          style={{ objectFit: 'cover' }}
-                          onError={() => setImageError(true)}
-                        />
-                      )}
+                  <div className="proper-modal-left">
+                    <div className="proper-avatar-wrap">
+                      <div className="proper-avatar-img" style={{ position: 'relative', overflow: 'hidden' }}>
+                        {(!artist.img || imageError) ? (
+                          <span className="placeholder-large">{firstLetter}</span>
+                        ) : (
+                          <Image
+                            src={artist.img}
+                            alt={artist.name}
+                            fill
+                            sizes="400px"
+                            style={{ objectFit: 'cover' }}
+                            onError={() => setImageError(true)}
+                          />
+                        )}
+                      </div>
+                      <div className="proper-avatar-glow" />
                     </div>
-                    <div className="proper-avatar-glow" />
-                  </div>
-                  <h2 className="proper-name">{artist.name}</h2>
-                  <span className="proper-tag">{artist.subCategory || artist.category}</span>
+                    <h2 className="proper-name">{artist.name}</h2>
+                    <span className="proper-tag">{artist.subCategory || artist.category}</span>
 
-                  <div className="proper-stats-row">
-                    <div className="p-stat"><strong>5.0</strong><span>RATING</span></div>
-                    <div className="p-stat"><strong>150+</strong><span>SHOWS</span></div>
-                  </div>
-                </div>
-
-
-                <div className="proper-modal-right">
-                  <div className="proper-section">
-                    <h4 className="proper-section-title">Artist Information</h4>
-                    <div className="proper-info-grid">
-                      <div className="proper-info-item">
-                        <span className="p-label">Location</span>
-                        <span className="p-value">{[artist.city, artist.state].filter(Boolean).join(', ') || 'Global'}</span>
-                      </div>
-                      <div className="proper-info-item">
-                        <span className="p-label">Category</span>
-                        <span className="p-value">{artist.category || 'Solo Performer'}</span>
-                      </div>
-                      <div className="proper-info-item">
-                        <span className="p-label">Languages</span>
-                        <span className="p-value">{artist.languages || 'English, Hindi'}</span>
-                      </div>
-                      {artist.originalPrice ? (
-                        <div className="proper-info-item">
-                          <span className="p-label">Original Price</span>
-                          <span className="p-value highlight" style={{ textDecoration: 'line-through', opacity: 0.6 }}>₹{artist.originalPrice?.toLocaleString()}</span>
-                        </div>
-                      ) : (
-                        <div className="proper-info-item">
-                          <span className="p-label">Price Range</span>
-                          <span className="p-value highlight">₹{artist.priceMin?.toLocaleString()} - ₹{artist.priceMax?.toLocaleString()}</span>
-                        </div>
-                      )}
-                      {artist.exclusivePrice && (
-                        <div className="proper-info-item">
-                          <span className="p-label">Exclusive Price</span>
-                          <span className="p-value highlight" style={{ color: '#e11d48' }}>₹{artist.exclusivePrice?.toLocaleString()}</span>
-                        </div>
-                      )}
+                    <div className="proper-stats-row">
+                      <div className="p-stat"><strong>5.0</strong><span>RATING</span></div>
+                      <div className="p-stat"><strong>150+</strong><span>SHOWS</span></div>
                     </div>
                   </div>
 
-                  <div className="proper-section">
-                    <h4 className="proper-section-title">Professional Bio</h4>
-                    <p className="proper-bio-text">
-                      {artist.quote || "A top-tier artist providing premium entertainment solutions for high-end events. Known for exceptional vocal performance and stage presence."}
-                    </p>
-                  </div>
 
-                  <div className="proper-modal-footer">
-                    <button
-                      className="proper-book-btn"
-                      onClick={() => {
-                        setShowDetails(false);
-                        window.dispatchEvent(new CustomEvent('open-contact-modal', { detail: { type: 'booking', artist: artist } }));
-                      }}
-                    >
-                      PROCEED TO BOOKING
-                    </button>
+                  <div className="proper-modal-right">
+                    <div className="proper-section">
+                      <h4 className="proper-section-title">Artist Information</h4>
+                      <div className="proper-info-grid">
+                        <div className="proper-info-item">
+                          <span className="p-label">Location</span>
+                          <span className="p-value">{[artist.city, artist.state].filter(Boolean).join(', ') || 'Global'}</span>
+                        </div>
+                        <div className="proper-info-item">
+                          <span className="p-label">Category</span>
+                          <span className="p-value">{artist.category || 'Solo Performer'}</span>
+                        </div>
+                        <div className="proper-info-item">
+                          <span className="p-label">Languages</span>
+                          <span className="p-value">{artist.languages || 'English, Hindi'}</span>
+                        </div>
+                        {artist.originalPrice ? (
+                          <div className="proper-info-item">
+                            <span className="p-label">Original Price</span>
+                            <span className="p-value highlight" style={{ textDecoration: 'line-through', opacity: 0.6 }}>₹{artist.originalPrice?.toLocaleString()}</span>
+                          </div>
+                        ) : (
+                          <div className="proper-info-item">
+                            <span className="p-label">Price Range</span>
+                            <span className="p-value highlight">₹{artist.priceMin?.toLocaleString()} - ₹{artist.priceMax?.toLocaleString()}</span>
+                          </div>
+                        )}
+                        {artist.exclusivePrice && (
+                          <div className="proper-info-item">
+                            <span className="p-label">Exclusive Price</span>
+                            <span className="p-value highlight" style={{ color: '#e11d48' }}>₹{artist.exclusivePrice?.toLocaleString()}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="proper-section">
+                      <h4 className="proper-section-title">Professional Bio</h4>
+                      <p className="proper-bio-text">
+                        {artist.quote || "A top-tier artist providing premium entertainment solutions for high-end events. Known for exceptional vocal performance and stage presence."}
+                      </p>
+                    </div>
+
+                    <div className="proper-modal-footer" style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '20px' }}>
+                      <button
+                        className="proper-book-btn"
+                        onClick={() => {
+                          setShowDetails(false);
+                          window.dispatchEvent(new CustomEvent('open-contact-modal', { detail: { type: 'booking', artist: artist } }));
+                        }}
+                      >
+                        PROCEED TO BOOKING
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowDetails(false)}
+                        style={{
+                          width: '100%',
+                          height: '56px',
+                          background: 'rgba(255, 255, 255, 0.04)',
+                          border: '1px solid rgba(255, 255, 255, 0.08)',
+                          color: 'rgba(255, 255, 255, 0.6)',
+                          borderRadius: '100px',
+                          fontWeight: '800',
+                          fontSize: '13px',
+                          letterSpacing: '0.1em',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          textTransform: 'uppercase'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.target.style.background = 'rgba(214, 80, 80, 0.1)';
+                          e.target.style.borderColor = '#D65050';
+                          e.target.style.color = '#fff';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.background = 'rgba(255, 255, 255, 0.04)';
+                          e.target.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                          e.target.style.color = 'rgba(255, 255, 255, 0.6)';
+                        }}
+                      >
+                        Cancel & Close
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </>
   )
 }
