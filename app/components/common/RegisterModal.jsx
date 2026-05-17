@@ -167,7 +167,7 @@ export default function RegisterModal() {
                     <div className="option-icon">🎉</div>
                     <h4>Register Event</h4>
                     <p>
-                      Book verified live singers, bands, or DJs for your celebrations.
+                      Book verified live singers, bands, or DJs for weddings, private parties and corporate events.
                     </p>
                     <button className="option-cta-btn btn-event">
                       Book an Artist →
@@ -183,7 +183,7 @@ export default function RegisterModal() {
                     <div className="option-icon">🎤</div>
                     <h4>Artist Roster</h4>
                     <p>
-                      Join our elite platform to get booked at premium venues.
+                      Join our elite platform to showcase your talent and get booked at premium events.
                     </p>
                     <button className="option-cta-btn btn-artist">
                       Join Our Roster →
