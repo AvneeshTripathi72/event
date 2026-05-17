@@ -207,3 +207,19 @@ button { font-family: var(--font-body); cursor: pointer; border: none; outline: 
 
 .cat-inner::-webkit-scrollbar { display: none; }
 
+/* 🔒 BULLETPROOF BODY SCROLL LOCK FOR MODALS & MOBILE SIDEBAR DRAWER */
+body.modal-open {
+  overflow: hidden !important;
+  height: 100vh !important;
+  touch-action: none !important;
+  -webkit-overflow-scrolling: none !important;
+}
+
+/* Explicitly allow touch scrolling inside active sliding panels and overlays */
+.lux-mobile-panel,
+.artist-details-overlay,
+.proper-desktop-modal,
+.lux-mobile-submenu {
+  touch-action: pan-y !important;
+  -webkit-overflow-scrolling: touch !important;
+}
