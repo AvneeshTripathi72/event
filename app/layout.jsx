@@ -7,14 +7,9 @@ import '@fontsource/inter/500.css';
 import '@fontsource/inter/600.css';
 import '@fontsource/inter/700.css';
 
-import dynamic from 'next/dynamic'
 import { Providers } from '@/app/layouts/Providers';
 import { AppShellWrapper } from '@/app/layouts/AppShellWrapper';
-
-const ContactModal = dynamic(() => import('@/app/components/common/ContactModal'), { ssr: false })
-const RegisterModal = dynamic(() => import('@/app/components/common/RegisterModal'), { ssr: false })
-const FloatingWhatsApp = dynamic(() => import('@/app/components/common/FloatingWhatsApp'), { ssr: false })
-const PWAInstallPrompt = dynamic(() => import('@/app/components/common/PWAInstallPrompt'), { ssr: false })
+import DeferredClientWidgets from '@/app/components/common/DeferredClientWidgets';
 
 export const viewport = {
   themeColor: '#0a0a0a',
@@ -60,10 +55,7 @@ export default function RootLayout({ children }) {
           <AppShellWrapper>
             {children}
           </AppShellWrapper>
-          <ContactModal />
-          <RegisterModal />
-          <FloatingWhatsApp />
-          <PWAInstallPrompt />
+          <DeferredClientWidgets />
         </Providers>
       </body>
     </html>
