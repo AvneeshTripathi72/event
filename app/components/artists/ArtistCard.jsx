@@ -39,30 +39,34 @@ export default function ArtistCard({ artist, onBook }) {
         whileHover={{ y: -8 }}
         className="artist-card-v2"
       >
-        <div className="card-inner">
-          <div className="artist-avatar-container">
-            <div className="avatar-ring">
-              <div className="avatar-img-wrapper" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#0a0a0a', position: 'relative', overflow: 'hidden' }}>
-                {(!artist.img || imageError) ? (
-                  <span style={{ fontSize: '50px', fontWeight: 'bold', color: '#fff', opacity: 0.2 }}>{firstLetter}</span>
-                ) : (
-                  <Image
-                    src={artist.img}
-                    alt={artist.name}
-                    className="artist-avatar-img"
-                    fill
-                    sizes="(max-width: 768px) 150px, 200px"
-                    style={{ objectFit: 'cover' }}
-                    onError={() => setImageError(true)}
-                  />
-                )}
-              </div>
-              <div className="note-icon-badge">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-              </div>
-            </div>
-          </div>
+        <div className="artist-cover-image">
+           {(!artist.img || imageError) ? (
+             <Image
+               src={`https://ui-avatars.com/api/?name=${encodeURIComponent(artist.name || 'A')}&background=111111&color=D65050&size=400&font-size=0.33&bold=true`}
+               alt={artist.name}
+               fill
+               sizes="(max-width: 768px) 300px, 400px"
+               style={{ objectFit: 'cover' }}
+               unoptimized
+             />
+           ) : (
+             <Image
+               src={artist.img}
+               alt={artist.name}
+               fill
+               sizes="(max-width: 768px) 300px, 400px"
+               style={{ objectFit: 'cover' }}
+               unoptimized
+               onError={() => setImageError(true)}
+             />
+           )}
+           <div className="image-overlay-gradient"></div>
+           <div className="note-icon-badge-v2">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+           </div>
+        </div>
 
+        <div className="card-inner-content">
           <div className="artist-info-v2" style={{ width: '100%' }}>
             <h3 className="artist-name-v2">{artist.name}</h3>
             <div className="category-badge-v2">{artist.subCategory || artist.category || 'PERFORMER'}</div>
@@ -98,37 +102,78 @@ export default function ArtistCard({ artist, onBook }) {
               >
                 <button className="proper-close-btn" onClick={() => setShowDetails(false)}>&times;</button>
 
-                <div className="proper-modal-content">
+                <div className="proper-modal-header" style={{ position: 'relative', width: '100%', height: '280px', overflow: 'hidden' }}>
+                  {(!artist.img || imageError) ? (
+                    <Image
+                      src={`https://ui-avatars.com/api/?name=${encodeURIComponent(artist.name || 'A')}&background=111111&color=D65050&size=800&font-size=0.33&bold=true`}
+                      alt={artist.name}
+                      fill
+                      sizes="1000px"
+                      style={{ objectFit: 'cover', objectPosition: 'center 15%' }}
+                      unoptimized
+                    />
+                  ) : (
+                    <Image
+                      src={artist.img}
+                      alt={artist.name}
+                      fill
+                      sizes="1000px"
+                      style={{ objectFit: 'cover', objectPosition: 'center 15%' }}
+                      unoptimized
+                      onError={() => setImageError(true)}
+                    />
+                  )}
+                  <div className="image-overlay-gradient"></div>
+                  <div style={{ position: 'absolute', bottom: '25px', left: '40px', zIndex: 10, textAlign: 'left' }}>
+                    <h2 className="proper-name" style={{ margin: 0, fontSize: '42px', textShadow: '0 4px 20px rgba(0,0,0,0.8)' }}>{artist.name}</h2>
+                    <span className="proper-tag" style={{ display: 'inline-block', marginTop: '8px' }}>{artist.subCategory || artist.category}</span>
+                  </div>
+                  <div style={{ position: 'absolute', bottom: '25px', right: '40px', zIndex: 10, display: 'flex', gap: '20px' }}>
+                    <div className="p-stat" style={{ textAlign: 'center' }}><strong>5.0</strong><span>RATING</span></div>
+                    <div className="p-stat" style={{ textAlign: 'center' }}><strong>150+</strong><span>SHOWS</span></div>
+                  </div>
+                </div>
 
-                  <div className="proper-modal-left">
-                    <div className="proper-avatar-wrap">
-                      <div className="proper-avatar-img" style={{ position: 'relative', overflow: 'hidden' }}>
-                        {(!artist.img || imageError) ? (
-                          <span className="placeholder-large">{firstLetter}</span>
-                        ) : (
-                          <Image
-                            src={artist.img}
-                            alt={artist.name}
-                            fill
-                            sizes="400px"
-                            style={{ objectFit: 'cover' }}
-                            onError={() => setImageError(true)}
-                          />
+                <div className={`proper-modal-content-new ${(!artist.videoUrls?.length && !artist.galleryImages?.length) ? 'single-col' : ''}`} style={{ padding: '40px' }}>
+                  
+                  {/* Only show left column if there is media */}
+                  {(artist.videoUrls?.length > 0 || artist.galleryImages?.length > 0) && (
+                    <div className="proper-modal-left-col">
+                      <div className="proper-section">
+                        <h4 className="proper-section-title">Media Gallery</h4>
+                        
+                        {artist.videoUrls?.map((url, i) => {
+                          const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+                          const ytId = match ? match[1] : null;
+                          if (!ytId) return null;
+                          return (
+                            <div key={i} style={{ marginBottom: '20px', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
+                              <iframe 
+                                width="100%" 
+                                height="220" 
+                                src={`https://www.youtube.com/embed/${ytId}?rel=0&modestbranding=1`} 
+                                frameBorder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowFullScreen
+                              ></iframe>
+                            </div>
+                          );
+                        })}
+
+                        {artist.galleryImages?.length > 0 && (
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '12px' }}>
+                            {artist.galleryImages.map((imgUrl, i) => (
+                              <div key={i} style={{ position: 'relative', height: '100px', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                <Image src={imgUrl} fill style={{ objectFit: 'cover' }} alt={`${artist.name} gallery ${i+1}`} unoptimized />
+                              </div>
+                            ))}
+                          </div>
                         )}
                       </div>
-                      <div className="proper-avatar-glow" />
                     </div>
-                    <h2 className="proper-name">{artist.name}</h2>
-                    <span className="proper-tag">{artist.subCategory || artist.category}</span>
+                  )}
 
-                    <div className="proper-stats-row">
-                      <div className="p-stat"><strong>5.0</strong><span>RATING</span></div>
-                      <div className="p-stat"><strong>150+</strong><span>SHOWS</span></div>
-                    </div>
-                  </div>
-
-
-                  <div className="proper-modal-right">
+                  <div className="proper-modal-right-col" style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
                     <div className="proper-section">
                       <h4 className="proper-section-title">Artist Information</h4>
                       <div className="proper-info-grid">
@@ -171,7 +216,7 @@ export default function ArtistCard({ artist, onBook }) {
                       </p>
                     </div>
 
-                    <div className="proper-modal-footer" style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '20px' }}>
+                    <div className="proper-modal-footer" style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: 'auto', paddingTop: '20px' }}>
                       <button
                         className="proper-book-btn"
                         onClick={() => {

@@ -67,8 +67,7 @@
 .artist-card-v2 {
   position: relative;
   background: #0a0a0a;
-  border-radius: 32px;
-  padding: 28px 22px;
+  border-radius: 24px;
   text-align: center;
   border: 1px solid rgba(255, 255, 255, 0.05);
   transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
@@ -84,42 +83,36 @@
   box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.8);
 }
 
-.card-inner {
+.artist-cover-image {
+  width: 100%;
+  height: 240px;
   position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
+  background: #111;
 }
 
-.avatar-ring {
-  position: relative;
-  width: 120px;
-  height: 120px;
-  padding: 4px;
-  background: linear-gradient(135deg, #D65050 0%, #8b1e1e 100%);
-  border-radius: 50%;
+.placeholder-cover {
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 25px rgba(214, 80, 80, 0.2);
+  background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
 }
 
-.avatar-img-wrapper {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 4px solid #0a0a0a;
-}
-
-.note-icon-badge {
+.image-overlay-gradient {
   position: absolute;
-  bottom: 5px;
-  right: 5px;
-  width: 32px;
-  height: 32px;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(10,10,10,0) 50%, rgba(10,10,10,1) 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.note-icon-badge-v2 {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+  width: 38px;
+  height: 38px;
   background: #D65050;
   border-radius: 50%;
   display: flex;
@@ -128,6 +121,17 @@
   color: #fff;
   border: 3px solid #0a0a0a;
   z-index: 5;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+.card-inner-content {
+  padding: 20px 22px 28px 22px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  position: relative;
+  z-index: 2;
+  align-items: center;
 }
 
 .artist-name-v2 { font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 2px; font-family: var(--font-display); }
@@ -154,14 +158,14 @@
 
 .artist-details-overlay {
   position: fixed !important; inset: 0 !important;
-  background: rgba(0, 0, 0, 0.5) !important;
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  z-index: 9900 !important;
+  background: rgba(0, 0, 0, 0.7) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 999999 !important;
   display: flex; 
-  align-items: flex-start !important;
+  align-items: center !important;
   justify-content: center;
-  padding: 40px 20px;
+  padding: 20px;
   overflow-y: auto !important;
   -webkit-overflow-scrolling: touch;
 }
@@ -169,13 +173,21 @@
 .proper-desktop-modal {
   background: #050505 !important;
   width: 100%;
-  max-width: 860px;
-  min-height: 580px;
-  border-radius: 44px;
-  border: 1px solid rgba(214, 80, 80, 0.6);
-  position: relative; overflow: hidden;
-  box-shadow: 0 0 80px rgba(214, 80, 80, 0.15), 0 50px 100px rgba(0, 0, 0, 0.8);
+  max-width: 960px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative; 
+  box-shadow: 0 0 80px rgba(0, 0, 0, 0.5), 0 50px 100px rgba(0, 0, 0, 0.8);
   animation: modalIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.image-overlay-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, #050505 0%, rgba(5,5,5,0.8) 30%, transparent 100%);
+  pointer-events: none;
 }
 
 @keyframes modalIn {
@@ -193,24 +205,17 @@
 }
 .proper-close-btn:hover { background: #D65050; border-color: #D65050; transform: rotate(90deg); }
 
-.proper-modal-content {
-  display: grid; grid-template-columns: 340px 1fr; min-height: 580px;
+.proper-modal-content-new {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  padding: 40px;
 }
-
-.proper-modal-left {
-  background: #0a0a0a !important;
-  padding: 50px 35px; border-right: 1px solid rgba(255, 255, 255, 0.05);
-  display: flex; flex-direction: column; align-items: center; text-align: center;
-  position: relative;
+.proper-modal-content-new.single-col {
+  grid-template-columns: 1fr;
+  max-width: 600px;
+  margin: 0 auto;
 }
-
-.proper-avatar-wrap { position: relative; width: 190px; height: 190px; margin-bottom: 30px; }
-.proper-avatar-img {
-  width: 100%; height: 100%; border-radius: 50%; overflow: hidden;
-  border: 5px solid #D65050; background: #000; position: relative; z-index: 2;
-  box-shadow: 0 0 30px rgba(214, 80, 80, 0.3);
-}
-.proper-avatar-img img { width: 100%; height: 100%; object-fit: cover; }
 
 .proper-name {
   font-size: 36px; font-weight: 800; color: #fff; margin-bottom: 10px;
@@ -226,9 +231,7 @@
 .p-stat strong { display: block; font-size: 24px; color: #FFE032; margin-bottom: 4px; }
 .p-stat span { font-size: 9px; color: rgba(255, 255, 255, 0.4); font-weight: 800; letter-spacing: 0.1em; }
 
-.proper-modal-right {
-  padding: 60px 45px; display: flex; flex-direction: column; gap: 40px; background: #050505 !important;
-}
+
 
 .proper-section-title {
   font-size: 11px; color: #D65050; font-weight: 800; text-transform: uppercase; letter-spacing: 0.2em;
@@ -253,12 +256,19 @@
 }
 .proper-book-btn:hover { transform: translateY(-4px); background: #fff; box-shadow: 0 20px 40px rgba(255, 224, 50, 0.3); }
 
+@keyframes skeleton-pulse {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
+}
+
+.skeleton-pulse {
+  animation: skeleton-pulse 1.5s infinite ease-in-out;
+}
+
 @media (max-width: 900px) {
-  .proper-modal-content { grid-template-columns: 1fr; }
+  .proper-modal-content-new { grid-template-columns: 1fr; padding: 20px; gap: 20px; }
   .proper-desktop-modal { max-width: 480px; border-radius: 30px; }
-  .proper-modal-left { padding: 40px 20px; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.05); }
-  .proper-modal-right { padding: 40px 30px; }
-  .proper-avatar-wrap { width: 140px; height: 140px; }
 }
 
 @media (max-width: 600px) {
@@ -284,12 +294,19 @@
     z-index: 100 !important;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3) !important;
   }
-  .proper-modal-left {
-    padding: 30px 16px 20px !important;
+  .proper-name {
+    font-size: 28px !important;
   }
-  .proper-modal-right {
-    padding: 24px 20px 80px !important; /* Ensure bottom scrolling spacer is active */
-    gap: 24px !important;
+  .proper-modal-content-new {
+    padding: 16px !important;
+    gap: 16px !important;
+  }
+  .proper-modal-header {
+    height: 200px !important;
+  }
+  .proper-info-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
   }
   .proper-name {
     font-size: 28px !important;

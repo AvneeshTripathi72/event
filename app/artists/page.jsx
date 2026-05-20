@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { AppShellWrapper } from '@/app/layouts/AppShellWrapper'
 import ArtistCard from '@/app/components/artists/ArtistCard'
-import { ARTISTS_CAT_FILTER } from '@/app/constants'
+import { ARTISTS_CAT_FILTER, FEATURED_ARTISTS } from '@/app/constants'
 import { supabase } from '@/app/lib/supabase'
 import '@/app/styles/pages/Artists.css'
 
@@ -31,7 +31,30 @@ export default function ArtistsPage() {
           .eq('is_popular', false)
           .eq('is_artist_of_month', false)
 
-        if (error) throw error
+        if (!data || data.length === 0) {
+          console.warn('Database returned no standard artists, using fallback FEATURED_ARTISTS.');
+          const fallbackArtists = FEATURED_ARTISTS.map((artist, idx) => ({
+            id: idx + 1,
+            name: artist.name,
+            category: artist.genre.includes(' ') ? artist.genre.split(' ')[1] : artist.genre, 
+            subCategory: artist.genre,
+            city: artist.city || 'Mumbai',
+            state: 'India',
+            languages: 'Hindi, English',
+            priceMin: 50000,
+            priceMax: 70000,
+            img: artist.image,
+            quote: 'A top-tier artist providing premium entertainment.',
+            galleryImages: [
+              '/assets/lux-live-band-concert.webp',
+              '/assets/lux-wedding-celebration.webp'
+            ],
+            videoUrls: ['https://www.youtube.com/watch?v=F4Gk0u0_U7Q'] // Dummy video
+          }));
+          cachedArtistsData = fallbackArtists;
+          setArtists(fallbackArtists);
+          return;
+        }
 
         const formattedArtists = data.map(artist => ({
           id: artist.id,
@@ -46,13 +69,35 @@ export default function ArtistsPage() {
           originalPrice: artist.original_price,
           exclusivePrice: artist.exclusive_price,
           img: artist.artist_images?.[0]?.image_url || null,
+          galleryImages: artist.artist_images?.map(img => img.image_url).filter(Boolean) || [],
+          videoUrls: artist.video_url ? artist.video_url.split(',').map(url => url.trim()).filter(Boolean) : [],
           quote: artist.bio || '',
         }))
 
         cachedArtistsData = formattedArtists
         setArtists(formattedArtists)
       } catch (err) {
-        console.error('Error fetching artists:', err)
+        console.error('Error fetching artists, using fallback:', err)
+        const fallbackArtists = FEATURED_ARTISTS.map((artist, idx) => ({
+          id: idx + 1,
+          name: artist.name,
+          category: artist.genre.includes(' ') ? artist.genre.split(' ')[1] : artist.genre,
+          subCategory: artist.genre,
+          city: artist.city || 'Mumbai',
+          state: 'India',
+          languages: 'Hindi, English',
+          priceMin: 50000,
+          priceMax: 70000,
+          img: artist.image,
+          quote: 'A top-tier artist providing premium entertainment.',
+          galleryImages: [
+            '/assets/lux-live-band-concert.webp',
+            '/assets/lux-wedding-celebration.webp'
+          ],
+          videoUrls: ['https://www.youtube.com/watch?v=F4Gk0u0_U7Q'] // Dummy video
+        }));
+        cachedArtistsData = fallbackArtists;
+        setArtists(fallbackArtists);
       } finally {
         setLoading(false)
       }
@@ -112,7 +157,34 @@ export default function ArtistsPage() {
 
         <div className="artists-grid">
           {loading ? (
-            <p style={{ textAlign: 'center', width: '100%', color: 'white' }}>Loading artists...</p>
+            <>
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="artist-card-skeleton" style={{ 
+                  background: 'rgba(255,255,255,0.02)', 
+                  border: '1px solid rgba(255,255,255,0.05)',
+                  borderRadius: '24px', 
+                  height: '460px', 
+                  width: '100%', 
+                  overflow: 'hidden'
+                }}>
+                   <div className="skeleton-pulse" style={{ height: '220px', background: 'rgba(255,255,255,0.04)', width: '100%' }}></div>
+                   <div style={{ padding: '30px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                     <div className="skeleton-pulse" style={{ height: '28px', width: '70%', background: 'rgba(255,255,255,0.04)', borderRadius: '6px', marginBottom: '12px' }}></div>
+                     <div className="skeleton-pulse" style={{ height: '14px', width: '40%', background: 'rgba(255,255,255,0.04)', borderRadius: '4px', marginBottom: '30px' }}></div>
+                     
+                     <div style={{ display: 'flex', gap: '20px', marginBottom: '30px', width: '100%', justifyContent: 'center' }}>
+                       <div className="skeleton-pulse" style={{ height: '36px', width: '60px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px' }}></div>
+                       <div className="skeleton-pulse" style={{ height: '36px', width: '60px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px' }}></div>
+                     </div>
+                     
+                     <div style={{ display: 'flex', gap: '10px', width: '100%' }}>
+                       <div className="skeleton-pulse" style={{ height: '44px', flex: 1, background: 'rgba(255,255,255,0.04)', borderRadius: '100px' }}></div>
+                       <div className="skeleton-pulse" style={{ height: '44px', flex: 1, background: 'rgba(255,255,255,0.04)', borderRadius: '100px' }}></div>
+                     </div>
+                   </div>
+                </div>
+              ))}
+            </>
           ) : (
             <AnimatePresence mode='popLayout'>
               {filteredArtists.length > 0 ? (

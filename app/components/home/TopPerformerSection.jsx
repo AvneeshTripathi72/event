@@ -14,6 +14,7 @@ let cachedArtistOfMonth = null;
 
 function TopPerformerSection() {
   const [artist, setArtist] = useState(ARTIST_OF_MONTH);
+  const [loading, setLoading] = useState(!cachedArtistOfMonth);
 
   useEffect(() => {
     // Return cached data from main memory instantly if already loaded
@@ -45,13 +46,13 @@ function TopPerformerSection() {
           }
 
           const parsedArtist = {
-            name: data.name ?? ARTIST_OF_MONTH.name,
-            image: data.artist_images?.[0]?.image_url ?? ARTIST_OF_MONTH.image,
+            name: data.name || ARTIST_OF_MONTH.name,
+            image: data.artist_images?.[0]?.image_url || ARTIST_OF_MONTH.image,
             genres: genres,
-            originalPrice: data.original_price ?? data.price_max ?? ARTIST_OF_MONTH.originalPrice,
-            exclusivePrice: data.exclusive_price ?? data.price_min ?? ARTIST_OF_MONTH.exclusivePrice,
-            rating: data.rating ?? ARTIST_OF_MONTH.rating,
-            bookings: data.successful_bookings ?? ARTIST_OF_MONTH.bookings,
+            originalPrice: data.original_price || data.price_max || 0,
+            exclusivePrice: data.exclusive_price || data.price_min || 0,
+            rating: data.rating || 0,
+            bookings: data.successful_bookings || 0,
           };
 
           // Store in main memory cache
@@ -60,6 +61,8 @@ function TopPerformerSection() {
         }
       } catch (err) {
         console.error('Error fetching artist of the month:', err);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -72,54 +75,74 @@ function TopPerformerSection() {
         <h2 className="hp-top-performer-title">Top performer picked this month</h2>
       </div>
       <div className="hp-aom-card">
-        <div className="hp-aom-img-wrap">
-          <Image
-            src={artist.image}
-            alt={artist.name}
-            width={400}
-            height={400}
-            style={{ objectFit: 'cover' }}
-          />
-          <div className="hp-aom-badge">
-            <span className="hp-aom-badge-icon">🏆</span>
-            Artist of the Month
-          </div>
-        </div>
-        <div className="hp-aom-content">
-          <p className="hp-aom-genres">{(artist.genres || []).join(', ')}</p>
-          <h3 className="hp-aom-name">{artist.name}</h3>
-
-          <div className="hp-aom-stats-grid">
-            <div className="hp-aom-stat-row">
-              <span>Original Price</span>
-              <strong>Rs {formatINR(artist.originalPrice)}</strong>
+        {loading ? (
+          <>
+            <div className="hp-aom-img-wrap skeleton-pulse" style={{ background: 'rgba(255,255,255,0.05)' }}></div>
+            <div className="hp-aom-content" style={{ display: 'flex', flexDirection: 'column', padding: '40px' }}>
+               <div className="skeleton-pulse" style={{ height: '14px', width: '40%', background: 'rgba(255,255,255,0.05)', marginBottom: '16px', borderRadius: '4px' }}></div>
+               <div className="skeleton-pulse" style={{ height: '36px', width: '60%', background: 'rgba(255,255,255,0.05)', marginBottom: '40px', borderRadius: '6px' }}></div>
+               
+               <div className="skeleton-pulse" style={{ height: '48px', width: '100%', background: 'rgba(255,255,255,0.05)', marginBottom: '12px', borderRadius: '12px' }}></div>
+               <div className="skeleton-pulse" style={{ height: '48px', width: '100%', background: 'rgba(255,255,255,0.05)', marginBottom: '12px', borderRadius: '12px' }}></div>
+               <div className="skeleton-pulse" style={{ height: '48px', width: '100%', background: 'rgba(255,255,255,0.05)', marginBottom: '12px', borderRadius: '12px' }}></div>
+               <div className="skeleton-pulse" style={{ height: '48px', width: '100%', background: 'rgba(255,255,255,0.05)', marginBottom: '30px', borderRadius: '12px' }}></div>
+               
+               <div className="skeleton-pulse" style={{ height: '42px', width: '160px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px' }}></div>
             </div>
-            <div className="hp-aom-stat-row is-exclusive">
-              <span>Exclusive Price</span>
-              <strong>Rs {formatINR(artist.exclusivePrice)}</strong>
-            </div>
-            <div className="hp-aom-stat-row">
-              <span>Star Rating</span>
-              <div className="hp-aom-rating">
-                <Stars count={5} />
-                <strong>{artist.rating}/5</strong>
+          </>
+        ) : (
+          <>
+            <div className="hp-aom-img-wrap">
+              <Image
+                src={artist.image}
+                alt={artist.name}
+                width={400}
+                height={400}
+                style={{ objectFit: 'cover' }}
+                unoptimized
+              />
+              <div className="hp-aom-badge">
+                <span className="hp-aom-badge-icon">🏆</span>
+                Artist of the Month
               </div>
             </div>
-            <div className="hp-aom-stat-row">
-              <span>Total Bookings</span>
-              <strong>{artist.bookings}</strong>
-            </div>
-          </div>
+            <div className="hp-aom-content">
+              <p className="hp-aom-genres">{(artist.genres || []).join(', ')}</p>
+              <h3 className="hp-aom-name">{artist.name}</h3>
 
-          <button
-            onClick={() => window.dispatchEvent(new CustomEvent('open-contact-modal', {
-              detail: { type: 'booking', artist: artist }
-            }))}
-            className="hp-btn hp-aom-btn"
-          >
-            Book This Artist
-          </button>
-        </div>
+              <div className="hp-aom-stats-grid">
+                <div className="hp-aom-stat-row">
+                  <span>Original Price</span>
+                  <strong>Rs {formatINR(artist.originalPrice)}</strong>
+                </div>
+                <div className="hp-aom-stat-row is-exclusive">
+                  <span>Exclusive Price</span>
+                  <strong>Rs {formatINR(artist.exclusivePrice)}</strong>
+                </div>
+                <div className="hp-aom-stat-row">
+                  <span>Star Rating</span>
+                  <div className="hp-aom-rating">
+                    <Stars count={5} />
+                    <strong>{artist.rating}/5</strong>
+                  </div>
+                </div>
+                <div className="hp-aom-stat-row">
+                  <span>Total Bookings</span>
+                  <strong>{artist.bookings}</strong>
+                </div>
+              </div>
+
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent('open-contact-modal', {
+                  detail: { type: 'booking', artist: artist }
+                }))}
+                className="hp-btn hp-aom-btn"
+              >
+                Book This Artist
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </FadeSection>
   )
