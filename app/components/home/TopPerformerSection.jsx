@@ -8,20 +8,14 @@ import Stars from '@/app/components/common/Stars'
 import { ARTIST_OF_MONTH } from '@/app/constants'
 import { formatINR } from '@/app/utils/formatters'
 import { supabase } from '@/app/lib/supabase'
-
-// 🧠 In-memory Main Memory Cache for the Top Performer Artist Pick
-let cachedArtistOfMonth = null;
+import ArtistDetailsModal from '@/app/components/artists/ArtistDetailsModal'
 
 function TopPerformerSection() {
   const [artist, setArtist] = useState(ARTIST_OF_MONTH);
-  const [loading, setLoading] = useState(!cachedArtistOfMonth);
+  const [loading, setLoading] = useState(true);
+  const [showDetails, setShowDetails] = useState(false);
 
   useEffect(() => {
-    // Return cached data from main memory instantly if already loaded
-    if (cachedArtistOfMonth) {
-      setArtist(cachedArtistOfMonth);
-      return;
-    }
 
     const fetchArtistOfMonth = async () => {
       try {
@@ -46,7 +40,7 @@ function TopPerformerSection() {
           }
 
           const parsedArtist = {
-            name: data.name || ARTIST_OF_MONTH.name,
+            name: data.alias || data.name || ARTIST_OF_MONTH.name,
             image: data.artist_images?.[0]?.image_url || ARTIST_OF_MONTH.image,
             genres: genres,
             originalPrice: data.original_price || data.price_max || 0,
@@ -55,8 +49,6 @@ function TopPerformerSection() {
             bookings: data.successful_bookings || 0,
           };
 
-          // Store in main memory cache
-          cachedArtistOfMonth = parsedArtist;
           setArtist(parsedArtist);
         }
       } catch (err) {
@@ -132,14 +124,44 @@ function TopPerformerSection() {
                 </div>
               </div>
 
-              <button
-                onClick={() => window.dispatchEvent(new CustomEvent('open-contact-modal', {
-                  detail: { type: 'booking', artist: artist }
-                }))}
-                className="hp-btn hp-aom-btn"
-              >
-                Book This Artist
-              </button>
+              <div style={{ display: 'flex', gap: '15px' }}>
+                <button
+                  onClick={() => window.dispatchEvent(new CustomEvent('open-contact-modal', {
+                    detail: { type: 'booking', artist: artist }
+                  }))}
+                  className="hp-btn hp-aom-btn"
+                  style={{ flex: 1, whiteSpace: 'nowrap', padding: '12px 10px' }}
+                >
+                  Book Now
+                </button>
+                <button
+                  onClick={() => setShowDetails(true)}
+                  className="hp-btn"
+                  style={{ 
+                    flex: 1, 
+                    background: '#fff', 
+                    border: 'none', 
+                    color: '#000',
+                    fontWeight: '600',
+                    whiteSpace: 'nowrap',
+                    padding: '12px 10px'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.background = '#e0e0e0';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.background = '#fff';
+                  }}
+                >
+                  View Profile
+                </button>
+              </div>
+
+              <ArtistDetailsModal 
+                artist={artist} 
+                showDetails={showDetails} 
+                setShowDetails={setShowDetails} 
+              />
             </div>
           </>
         )}

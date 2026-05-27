@@ -16,49 +16,37 @@ export default function ArtistsPage() {
   const [activeCategory, setActiveCategory] = useState('All')
   const [artists, setArtists] = useState([])
   const [loading, setLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const ITEMS_PER_PAGE = 12
 
-  useEffect(() => {
-    const fetchArtists = async () => {
-      if (cachedArtistsData) {
-        setArtists(cachedArtistsData)
-        setLoading(false)
-        return
+  const fetchArtists = async (page = 1, category = activeCategory) => {
+    setLoading(true)
+    try {
+      let query = supabase
+        .from('artists')
+        .select('*, artist_images(image_url)', { count: 'exact' })
+
+      if (category !== 'All') {
+        const filterCat = category.replace(/s$/i, '')
+        query = query.or(`category.ilike.%${filterCat}%,sub_category.ilike.%${filterCat}%`)
       }
-      try {
-        const { data, error } = await supabase
-          .from('artists')
-          .select('*, artist_images(image_url)')
-          .eq('is_popular', false)
-          .eq('is_artist_of_month', false)
 
-        if (!data || data.length === 0) {
-          console.warn('Database returned no standard artists, using fallback FEATURED_ARTISTS.');
-          const fallbackArtists = FEATURED_ARTISTS.map((artist, idx) => ({
-            id: idx + 1,
-            name: artist.name,
-            category: artist.genre.includes(' ') ? artist.genre.split(' ')[1] : artist.genre, 
-            subCategory: artist.genre,
-            city: artist.city || 'Mumbai',
-            state: 'India',
-            languages: 'Hindi, English',
-            priceMin: 50000,
-            priceMax: 70000,
-            img: artist.image,
-            quote: 'A top-tier artist providing premium entertainment.',
-            galleryImages: [
-              '/assets/lux-live-band-concert.webp',
-              '/assets/lux-wedding-celebration.webp'
-            ],
-            videoUrls: ['https://www.youtube.com/watch?v=F4Gk0u0_U7Q'] // Dummy video
-          }));
-          cachedArtistsData = fallbackArtists;
-          setArtists(fallbackArtists);
-          return;
-        }
+      const from = (page - 1) * ITEMS_PER_PAGE
+      const to = from + ITEMS_PER_PAGE - 1
 
+      const { data, count, error } = await query
+        .range(from, to)
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        throw error
+      }
+
+      if (data) {
         const formattedArtists = data.map(artist => ({
           id: artist.id,
-          name: artist.name,
+          name: artist.alias || artist.name,
           category: artist.category,
           subCategory: artist.sub_category,
           city: artist.city,
@@ -73,66 +61,47 @@ export default function ArtistsPage() {
           videoUrls: artist.video_url ? artist.video_url.split(',').map(url => url.trim()).filter(Boolean) : [],
           quote: artist.bio || '',
         }))
-
-        cachedArtistsData = formattedArtists
         setArtists(formattedArtists)
-      } catch (err) {
-        console.error('Error fetching artists, using fallback:', err)
-        const fallbackArtists = FEATURED_ARTISTS.map((artist, idx) => ({
-          id: idx + 1,
-          name: artist.name,
-          category: artist.genre.includes(' ') ? artist.genre.split(' ')[1] : artist.genre,
-          subCategory: artist.genre,
-          city: artist.city || 'Mumbai',
-          state: 'India',
-          languages: 'Hindi, English',
-          priceMin: 50000,
-          priceMax: 70000,
-          img: artist.image,
-          quote: 'A top-tier artist providing premium entertainment.',
-          galleryImages: [
-            '/assets/lux-live-band-concert.webp',
-            '/assets/lux-wedding-celebration.webp'
-          ],
-          videoUrls: ['https://www.youtube.com/watch?v=F4Gk0u0_U7Q'] // Dummy video
-        }));
-        cachedArtistsData = fallbackArtists;
-        setArtists(fallbackArtists);
-      } finally {
-        setLoading(false)
+        setTotalPages(Math.ceil((count || 0) / ITEMS_PER_PAGE))
       }
+    } catch (err) {
+      console.error('Error fetching artists:', err)
+      setArtists([])
+      setTotalPages(1)
+    } finally {
+      setLoading(false)
     }
-
-    fetchArtists()
-  }, [])
+  }
 
   useEffect(() => {
-
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search)
       const catParam = params.get('category')
       if (catParam) {
-
         const match = ARTISTS_CAT_FILTER.find(
           c => c.toLowerCase() === catParam.toLowerCase() ||
                c.toLowerCase() === catParam.toLowerCase() + 's' ||
                c.toLowerCase().replace(/s$/, '') === catParam.toLowerCase()
         )
-        if (match) setActiveCategory(match)
+        if (match) {
+          setActiveCategory(match)
+          return
+        }
       }
     }
   }, [])
 
-  const filteredArtists = activeCategory === 'All'
-    ? artists
-    : artists.filter(a => {
-        const aCat = (a.category || '').toLowerCase()
-        const filterCat = activeCategory.toLowerCase()
-        return aCat === filterCat || aCat === filterCat.replace(/s$/, '') || aCat + 's' === filterCat
-      })
+  useEffect(() => {
+    fetchArtists(currentPage, activeCategory)
+  }, [currentPage, activeCategory])
 
   const handleBook = (name) => {
     router.push(`/book?artist=${encodeURIComponent(name)}`)
+  }
+
+  const handleCategoryChange = (cat) => {
+    setActiveCategory(cat)
+    setCurrentPage(1)
   }
 
   return (
@@ -145,7 +114,7 @@ export default function ArtistsPage() {
             <motion.button
               key={cat}
               className={`filter-btn ${activeCategory === cat ? 'active' : ''}`}
-              onClick={() => setActiveCategory(cat)}
+              onClick={() => handleCategoryChange(cat)}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: idx * 0.05 }}
@@ -187,8 +156,8 @@ export default function ArtistsPage() {
             </>
           ) : (
             <AnimatePresence mode='popLayout'>
-              {filteredArtists.length > 0 ? (
-                filteredArtists.map((artist) => (
+              {artists.length > 0 ? (
+                artists.map((artist) => (
                   <ArtistCard
                     key={artist.id}
                     artist={artist}
@@ -196,11 +165,37 @@ export default function ArtistsPage() {
                   />
                 ))
               ) : (
-                <p style={{ textAlign: 'center', width: '100%', color: 'white' }}>No standard artists found.</p>
+                <p style={{ textAlign: 'center', width: '100%', color: 'white', gridColumn: '1 / -1', padding: '40px 0' }}>No artists found in this category.</p>
               )}
             </AnimatePresence>
           )}
         </div>
+
+        {totalPages > 1 && (
+          <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+            <div className="fancy-pagination-wrapper">
+              <button 
+                className="fancy-pagination-btn"
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1 || loading}
+                aria-label="Previous page"
+              >
+                ← Previous
+              </button>
+              <span className="fancy-pagination-info">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button 
+                className="fancy-pagination-btn is-active"
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages || loading}
+                aria-label="Next page"
+              >
+                Next →
+              </button>
+            </div>
+          </div>
+        )}
 
       </div>
     </main>

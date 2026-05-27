@@ -330,3 +330,62 @@ body.modal-open .booking-bottom-nav,
 body.modal-open .booking-bottom-nav-spacer {
   display: none !important;
 }
+
+/* Fancy Pagination */
+.fancy-pagination-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 100px;
+  margin: 50px auto 0;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.fancy-pagination-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  border-radius: 100px;
+  font-weight: 600;
+  font-size: 15px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.fancy-pagination-btn:not(:disabled):hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.fancy-pagination-btn.is-active {
+  background: linear-gradient(135deg, #FF6B6B 0%, #D65050 100%);
+  box-shadow: 0 4px 15px rgba(214, 80, 80, 0.3);
+}
+
+.fancy-pagination-btn.is-active:not(:disabled):hover {
+  background: linear-gradient(135deg, #ff7a7a 0%, #e65656 100%);
+  box-shadow: 0 6px 20px rgba(214, 80, 80, 0.4);
+}
+
+.fancy-pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.fancy-pagination-info {
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 0 12px;
+  letter-spacing: 0.05em;
+}

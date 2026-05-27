@@ -135,31 +135,49 @@ export default function BlogPostPage() {
             ))}
 
 
-            {!loading && blogs.map((blog) => (
-              <Link key={blog.id} href={`/blog-post/${blog.id}`} className="modern-card-link">
-                <motion.div className="modern-blog-card" whileHover={{ y: -10 }}>
-                  {blog.image_url && (
-                    <div className="card-image" style={{ position: 'relative', overflow: 'hidden' }}>
-                      <Image
-                        src={blog.image_url}
-                        alt={blog.title}
-                        fill
-                        sizes="(max-width: 768px) 100vw, 400px"
-                        style={{ objectFit: 'cover' }}
-                        loading="lazy"
-                      />
-                    </div>
-                  )}
-                  <div className="card-body">
-                    <h4>{blog.title}</h4>
-                    <p>{blog.subtitle}</p>
-                    <div className="card-footer">
-                      <span className="cta-link">READ ARTICLE</span>
+            {loading ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <div key={`skel-blog-${i}`} className="modern-blog-card" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                  <div className="skeleton-pulse" style={{ height: '260px', width: '100%', background: 'rgba(255,255,255,0.03)' }}></div>
+                  <div className="card-body" style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '30px' }}>
+                    <div className="skeleton-pulse" style={{ height: '12px', width: '30%', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', marginBottom: '16px' }}></div>
+                    <div className="skeleton-pulse" style={{ height: '24px', width: '80%', background: 'rgba(255,255,255,0.05)', borderRadius: '6px', marginBottom: '16px' }}></div>
+                    <div className="skeleton-pulse" style={{ height: '14px', width: '100%', background: 'rgba(255,255,255,0.03)', borderRadius: '4px', marginBottom: '8px' }}></div>
+                    <div className="skeleton-pulse" style={{ height: '14px', width: '70%', background: 'rgba(255,255,255,0.03)', borderRadius: '4px', marginBottom: 'auto' }}></div>
+                    
+                    <div className="card-footer" style={{ marginTop: '30px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '20px' }}>
+                      <div className="skeleton-pulse" style={{ height: '14px', width: '100px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px' }}></div>
                     </div>
                   </div>
-                </motion.div>
-              </Link>
-            ))}
+                </div>
+              ))
+            ) : (
+              blogs.map((blog) => (
+                <Link key={blog.id} href={`/blog-post/${blog.id}`} className="modern-card-link">
+                  <motion.div className="modern-blog-card" whileHover={{ y: -10 }}>
+                    {blog.image_url && (
+                      <div className="card-image" style={{ position: 'relative', overflow: 'hidden' }}>
+                        <Image
+                          src={blog.image_url}
+                          alt={blog.title}
+                          fill
+                          sizes="(max-width: 768px) 100vw, 400px"
+                          style={{ objectFit: 'cover' }}
+                          loading="lazy"
+                        />
+                      </div>
+                    )}
+                    <div className="card-body">
+                      <h4>{blog.title}</h4>
+                      <p>{blog.subtitle}</p>
+                      <div className="card-footer">
+                        <span className="cta-link">READ ARTICLE</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                </Link>
+              ))
+            )}
           </div>
         </section>
 
