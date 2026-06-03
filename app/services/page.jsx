@@ -1,9 +1,12 @@
+
 "use client"
 
-import { useState, useEffect, useMemo } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useEffect, useMemo, useRef } from 'react'
+import { motion, AnimatePresence, useInView } from 'framer-motion'
 import { supabase } from '@/app/lib/supabase'
 import '@/app/styles/pages/ServicesPage.css'
+import '@/app/styles/components/ReelsSection.css'
+import ReelsSection from '@/app/components/services/ReelsSection'
 
 // Parse YouTube video ID cleanly
 const getYoutubeId = (url) => {
@@ -103,6 +106,7 @@ const sanitizeVideoData = (video) => {
   let userName = video.user_name;
   let artistType = '';
   let artistBio = '';
+  let isFeatured = video.main_headingvideo || false;
 
   try {
     if (video.user_name && video.user_name.startsWith('{')) {
@@ -150,21 +154,25 @@ const sanitizeVideoData = (video) => {
 
   return {
     ...video,
-    user_name: userName,
+    user_name: userName, // Now it's a plain string
     artist_type: artistType,
     artist_bio: artistBio,
     category: category,
-    topic: topic
+    topic: topic,
+    is_featured: isFeatured // Pass the boolean flag explicitly!
   };
 };
 
 const VideoCard = ({ video, onPlay }) => {
   const poster = getCategoryPoster(video.category, video.topic, video.video_url);
   const isYoutube = !!getYoutubeId(video.video_url);
+  const cardRef = useRef(null);
+  const isInView = useInView(cardRef, { margin: "0px", amount: 0.5 }); // Play when at least 50% visible
 
   return (
     <motion.div 
       layout
+      ref={cardRef}
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
@@ -182,18 +190,40 @@ const VideoCard = ({ video, onPlay }) => {
         boxShadow: '0 12px 30px rgba(0, 0, 0, 0.4)',
       }}
     >
-      {/* Background Poster Image */}
+      {/* Background Poster Image / Autoplaying Video */}
       <div 
         className="card-poster"
         style={{
           position: 'absolute',
           inset: 0,
-          backgroundImage: `url(${poster})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
+          transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+          backgroundColor: '#000'
         }}
-      />
+      >
+        {!isInView ? (
+          <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${poster})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+        ) : (
+          isYoutube ? (
+            <iframe
+              src={`https://www.youtube.com/embed/${getYoutubeId(video.video_url)}?autoplay=1&mute=1&loop=1&playlist=${getYoutubeId(video.video_url)}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1`}
+              style={{ width: '100%', height: '100%', border: 'none', objectFit: 'cover', transform: 'scale(1.35)', pointerEvents: 'none' }}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              title={video.user_name}
+            />
+          ) : (
+            <video
+              src={video.video_url}
+              autoPlay
+              muted
+              loop
+              playsInline
+              style={{ width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none' }}
+            />
+          )
+        )}
+      </div>
       
       {/* Premium Dark Gradient Overlay */}
       <div 
@@ -292,38 +322,7 @@ const VideoCard = ({ video, onPlay }) => {
         </div>
       </div>
 
-      {/* Bottom Information */}
-      <div 
-        className="card-details"
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          padding: '24px',
-          zIndex: 2,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '6px'
-        }}
-      >
-        <h4 
-          className="card-title"
-          style={{
-            margin: 0,
-            fontSize: '18px',
-            fontWeight: '700',
-            color: '#fff',
-            fontFamily: 'Outfit, var(--font-display), sans-serif',
-            letterSpacing: '-0.01em'
-          }}
-        >
-          {video.user_name}
-        </h4>
-        <span style={{ color: '#a1a1aa', fontSize: '13px', fontWeight: '400' }}>
-          {video.topic}
-        </span>
-      </div>
+
     </motion.div>
   );
 };
@@ -617,6 +616,8 @@ export default function ServicesPage() {
   return (
     <main className="services-page-layout" style={{ background: '#050507', color: '#fff', overflow: 'hidden', position: 'relative', minHeight: '100vh' }}>
       
+      <ReelsSection />
+
       {/* Dynamic Cinematic Blur Wrapper */}
       <div 
         style={{
@@ -633,179 +634,7 @@ export default function ServicesPage() {
 
       <div className="lux-container" style={{ position: 'relative', zIndex: 1, maxWidth: '1200px', margin: '0 auto', padding: isMobile ? '15px 16px' : '15px 24px' }}>
         
-        {/* CINEMATIC SPLIT HERO SHOWCASE (OPTIMIZED SPACE UTILIZATION) */}
-        <div 
-          style={{
-            display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr' : '1fr 1.25fr',
-            gap: isMobile ? '30px' : '45px',
-            alignItems: 'center',
-            marginBottom: isMobile ? '35px' : '55px',
-            position: 'relative',
-            zIndex: 2
-          }}
-        >
-          {/* LEFT COLUMN: ELEGANT LEFT-ALIGNED HERO TEXT & VALUE STATS */}
-          <header 
-            className="services-header" 
-            style={{ 
-              marginBottom: 0, 
-              textAlign: 'left',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'flex-start'
-            }}
-          >
-            <span 
-              style={{ 
-                fontSize: '9px', 
-                fontWeight: '900', 
-                color: '#D65050', 
-                background: 'rgba(214, 80, 80, 0.08)', 
-                padding: '6px 18px', 
-                borderRadius: '100px', 
-                border: '1px solid rgba(214, 80, 80, 0.15)', 
-                letterSpacing: '0.2em',
-                textTransform: 'uppercase',
-                display: 'inline-block',
-                marginBottom: isMobile ? '10px' : '15px'
-              }}
-            >
-              Exclusive Showreel
-            </span>
-            <h1 style={{ fontFamily: 'Outfit, sans-serif', fontSize: isMobile ? '32px' : 'clamp(36px, 4vw, 56px)', fontWeight: '900', color: '#fff', letterSpacing: '-0.03em', margin: '0 0 14px 0', lineHeight: '1.1' }}>
-              Watch Us <span className="text-gradient" style={{ background: 'linear-gradient(90deg, #D65050 0%, #ffffff 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Live</span>
-            </h1>
-            <p style={{ color: '#a1a1aa', fontSize: isMobile ? '13px' : '16px', maxWidth: '520px', margin: '0 0 24px 0', lineHeight: '1.6', fontWeight: '400' }}>
-              Experience the vibrant luxury performance staging of our premium singers, live wedding bands, corporate showcases, and elite DJs.
-            </p>
 
-            {/* HIGH-END INTERACTIVE KEY FACTS ROW */}
-            <div 
-              style={{ 
-                display: 'flex', 
-                gap: isMobile ? '16px' : '24px', 
-                marginTop: isMobile ? '10px' : '15px', 
-                borderTop: '1px solid rgba(255,255,255,0.06)', 
-                paddingTop: '20px',
-                width: '100%'
-              }}
-            >
-              <div>
-                <div style={{ fontSize: isMobile ? '20px' : '24px', fontWeight: '900', color: '#D65050', fontFamily: 'Outfit, sans-serif' }}>50+</div>
-                <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: '2px', fontWeight: '700' }}>Live Showreels</div>
-              </div>
-              <div style={{ width: '1px', background: 'rgba(255,255,255,0.08)' }}></div>
-              <div>
-                <div style={{ fontSize: isMobile ? '20px' : '24px', fontWeight: '900', color: '#fff', fontFamily: 'Outfit, sans-serif' }}>100%</div>
-                <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: '2px', fontWeight: '700' }}>Verified Artists</div>
-              </div>
-              <div style={{ width: '1px', background: 'rgba(255,255,255,0.08)' }}></div>
-              <div>
-                <div style={{ fontSize: isMobile ? '20px' : '24px', fontWeight: '900', color: '#fff', fontFamily: 'Outfit, sans-serif' }}>Dolby</div>
-                <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: '2px', fontWeight: '700' }}>HD Staging Audio</div>
-              </div>
-            </div>
-          </header>
-
-          {/* RIGHT COLUMN: ELEGANT COMPACT SPOTLIGHT BANNER */}
-          <section 
-            onClick={() => setActiveVideo(spotlightVideo)}
-            style={{
-              position: 'relative',
-              width: '100%',
-              height: isMobile ? '260px' : '350px',
-              borderRadius: isMobile ? '20px' : '28px',
-              overflow: 'hidden',
-              border: '1px solid rgba(255, 255, 255, 0.06)',
-              marginBottom: 0,
-              background: '#0a0a0c',
-              cursor: 'pointer',
-              boxShadow: '0 25px 60px rgba(0, 0, 0, 0.75)'
-            }}
-            className="spotlight-banner-wrap"
-          >
-            {/* Loop silent preview in background */}
-            {spotlightYoutubeId ? (
-              <iframe
-                src={`https://www.youtube.com/embed/${spotlightYoutubeId}?autoplay=1&loop=1&playlist=${spotlightYoutubeId}&mute=1&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1`}
-                style={{
-                  position: 'absolute',
-                  top: '50%', left: '50%', width: '100%', height: '100%',
-                  transform: 'translate(-50%, -50%) scale(1.35)',
-                  pointerEvents: 'none',
-                  opacity: 0.3,
-                  transition: 'opacity 0.4s ease'
-                }}
-              />
-            ) : (
-              <video 
-                src={spotlightVideo.video_url}
-                autoPlay
-                loop
-                muted
-                playsInline
-                style={{
-                  position: 'absolute',
-                  top: 0, left: 0, width: '100%', height: '100%',
-                  objectFit: 'cover',
-                  opacity: 0.35,
-                  transition: 'opacity 0.4s ease'
-                }}
-              />
-            )}
-            {/* Subtle vignette overlays */}
-            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(5, 5, 7, 0.95) 0%, rgba(5, 5, 7, 0.5) 60%, rgba(0, 0, 0, 0.1) 100%)', zIndex: 1 }} />
-            <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 15% 50%, rgba(5, 5, 7, 0.9) 0%, rgba(5, 5, 7, 0) 70%)', zIndex: 1 }} />
-
-            {/* Spotlight content */}
-            <div 
-              style={{
-                position: 'absolute',
-                bottom: 0, left: 0, right: 0, top: 0,
-                padding: isMobile ? '20px' : '40px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                zIndex: 2,
-                maxWidth: '600px'
-              }}
-            >
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: isMobile ? '6px' : '14px' }}>
-                <span style={{ fontSize: '8px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.12em', background: 'rgba(214, 80, 80, 0.18)', color: '#D65050', padding: '3px 10px', borderRadius: '100px', border: '1px solid rgba(214, 80, 80, 0.25)' }}>
-                  ★ Featured Session
-                </span>
-              </div>
-              <h2 style={{ fontSize: isMobile ? '20px' : 'clamp(26px, 3.5vw, 38px)', fontWeight: '900', color: '#fff', margin: '0 0 6px 0', fontFamily: 'Outfit, sans-serif', letterSpacing: '-0.02em', lineHeight: '1.2' }}>
-                {spotlightVideo.user_name}
-              </h2>
-              <p style={{ color: '#d4d4d8', fontSize: isMobile ? '11px' : '15px', margin: '0 0 16px 0', lineHeight: '1.5' }}>
-                Click to launch this exclusive performance showreel in cinematic high-definition audio.
-              </p>
-
-              <div>
-                <button 
-                  style={{
-                    background: 'linear-gradient(135deg, #D65050 0%, #9F122B 100%)',
-                    color: '#fff',
-                    padding: isMobile ? '9px 20px' : '13px 32px',
-                    borderRadius: '100px',
-                    fontWeight: '900',
-                    border: 'none',
-                    fontSize: isMobile ? '10px' : '13px',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.08em',
-                    cursor: 'pointer',
-                    boxShadow: '0 8px 24px rgba(214, 80, 80, 0.3)',
-                    transition: 'all 0.3s ease'
-                  }}
-                >
-                  ▶ Watch Spotlight Live
-                </button>
-              </div>
-            </div>
-          </section>
-        </div>
 
         {/* HIGH-END INTERACTIVE OPTION GRID (FULLY WRAPPING FOR ULTIMATE VISIBILITY) */}
         <section 
