@@ -193,6 +193,7 @@ ${artistDetailsString}${planDetailsString}${serviceDetailsString}
       const moreInfoLink = `${adminUrl}/api/action-request?id=${bookingId}&type=client_request&action=more_info`;
       const unavailableLink = `${adminUrl}/api/action-request?id=${bookingId}&type=client_request&action=unavailable`;
       const rejectLink = `${adminUrl}/api/action-request?id=${bookingId}&type=client_request&action=reject`;
+      const customReplyLink = `${adminUrl}/dashboard/requests?reply=${bookingId}`;
       const previewLink = `${adminUrl}/dashboard/requests`;
 
       htmlBody += `
@@ -204,6 +205,7 @@ ${artistDetailsString}${planDetailsString}${serviceDetailsString}
             <a href="${moreInfoLink}" style="${btnBase} background-color: #3b82f6;">📞 Request More Info</a>
             <a href="${unavailableLink}" style="${btnBase} background-color: #f59e0b;">🗓️ Artist Unavailable</a>
             <a href="${rejectLink}" style="${btnBase} background-color: #ef4444;">❌ Reject / Not Possible</a>
+            <a href="${customReplyLink}" style="${btnBase} background-color: #8b5cf6;">✍️ Custom Reply</a>
           </div>
           <div style="margin-top: 12px;">
             <a href="${previewLink}" style="display: inline-block; background-color: #f1f5f9; color: #475569; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px; border: 1px solid #cbd5e1;">Preview in Dashboard</a>
