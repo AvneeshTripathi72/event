@@ -97,7 +97,7 @@ export default function ContactModal({ isOpen, onClose, initialType = 'booking',
         setSelectedEventType('')
         setSelectedBudget('')
         setSelectedArtistTypes([])
-      }, 3000)
+      }, 1800)
     } catch (error) {
       console.error("Booking error:", error)
       setIsSubmitting(false)
