@@ -187,15 +187,27 @@ ${artistDetailsString}${planDetailsString}${serviceDetailsString}
     let htmlBody = `<div style="font-family: sans-serif; white-space: pre-wrap;">${emailBody}</div>`;
     if (bookingId) {
       const adminUrl = process.env.NEXT_PUBLIC_ADMIN_URL || 'http://localhost:9002';
-      const approveLink = `${adminUrl}/api/action-request?id=${bookingId}&type=client_request&action=approve`;
+      const btnBase = "display: inline-block; color: #ffffff; padding: 10px 16px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px; margin-right: 8px; margin-bottom: 8px;";
+      
+      const confirmLink = `${adminUrl}/api/action-request?id=${bookingId}&type=client_request&action=confirm`;
+      const moreInfoLink = `${adminUrl}/api/action-request?id=${bookingId}&type=client_request&action=more_info`;
+      const unavailableLink = `${adminUrl}/api/action-request?id=${bookingId}&type=client_request&action=unavailable`;
       const rejectLink = `${adminUrl}/api/action-request?id=${bookingId}&type=client_request&action=reject`;
       const previewLink = `${adminUrl}/dashboard/requests`;
 
       htmlBody += `
-        <div style="margin-top: 24px; display: flex; gap: 12px; font-family: sans-serif;">
-          <a href="${approveLink}" style="display: inline-block; background-color: #10b981; color: #ffffff; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px;">Approve Booking</a>
-          <a href="${rejectLink}" style="display: inline-block; background-color: #ef4444; color: #ffffff; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px; margin-left: 10px;">Reject</a>
-          <a href="${previewLink}" style="display: inline-block; background-color: #f1f5f9; color: #475569; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px; border: 1px solid #cbd5e1; margin-left: 10px;">Preview</a>
+        <div style="margin-top: 24px; font-family: sans-serif; border-top: 1px solid #e2e8f0; padding-top: 16px;">
+          <h3 style="margin-top: 0; color: #334155; font-size: 16px;">Quick Replies</h3>
+          <p style="font-size: 13px; color: #64748b; margin-bottom: 12px;">Click a button below to instantly send a canned response to the client.</p>
+          <div style="display: flex; flex-wrap: wrap;">
+            <a href="${confirmLink}" style="${btnBase} background-color: #10b981;">✅ Confirm Booking</a>
+            <a href="${moreInfoLink}" style="${btnBase} background-color: #3b82f6;">📞 Request More Info</a>
+            <a href="${unavailableLink}" style="${btnBase} background-color: #f59e0b;">🗓️ Artist Unavailable</a>
+            <a href="${rejectLink}" style="${btnBase} background-color: #ef4444;">❌ Reject / Not Possible</a>
+          </div>
+          <div style="margin-top: 12px;">
+            <a href="${previewLink}" style="display: inline-block; background-color: #f1f5f9; color: #475569; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px; border: 1px solid #cbd5e1;">Preview in Dashboard</a>
+          </div>
         </div>
       `;
     }
