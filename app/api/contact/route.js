@@ -69,7 +69,6 @@ Artist Name:    ${artistName}
 `;
       }
 
-      // Add Selected Package/Pricing Plan details block
       let planDetailsString = '';
       if (data.selectedPlan && typeof data.selectedPlan === 'object') {
         const p = data.selectedPlan;
@@ -83,8 +82,6 @@ Tagline:        ${p.tagline || 'N/A'}
 Features:       ${p.features && p.features.length > 0 ? p.features.join(', ') : 'N/A'}
 `;
       }
-
-      // Add Selected Service details block
       let serviceDetailsString = '';
       if (data.selectedService && typeof data.selectedService === 'object') {
         const s = data.selectedService;
@@ -140,7 +137,7 @@ ${artistDetailsString}${planDetailsString}${serviceDetailsString}
       console.error("Email sending error:", err);
     }
 
-    // Also save to Supabase bookings table for admin dashboard
+   
     if (!isRegister && !isCallRequest) {
       try {
         const { createClient } = require('@supabase/supabase-js');
@@ -148,7 +145,6 @@ ${artistDetailsString}${planDetailsString}${serviceDetailsString}
         
         let numericBudget = 0;
         if (data.budget) {
-          // extract some numeric budget if possible
           if (data.budget.includes('5k_10k')) numericBudget = 10000;
           else if (data.budget.includes('10k_20k')) numericBudget = 20000;
           else if (data.budget.includes('20k_35k')) numericBudget = 35000;

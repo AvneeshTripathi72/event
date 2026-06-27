@@ -27,7 +27,6 @@ export default function ContactModal({ isOpen, onClose, initialType = 'booking',
       document.body.style.overflow = 'hidden'
       document.body.classList.add('modal-open')
 
-      // Smart auto-fill depending on selected item details
       if (initialPlan) {
         const planName = initialPlan.name.toLowerCase();
         if (planName.includes('singer')) {

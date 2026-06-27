@@ -27,6 +27,7 @@ function FeaturedArtistsSection() {
           .from('artists')
           .select('*, artist_images(image_url)')
           .eq('is_featured', true)
+          .eq('is_live', true)
           .limit(6);
 
         if (error) {
@@ -44,15 +45,27 @@ function FeaturedArtistsSection() {
             city: artist.city || 'India'
           }));
           
-          if (parsedArtists.length < 15) {
-            const needed = 15 - parsedArtists.length;
-            const padding = FEATURED_ARTISTS.filter(fa => !parsedArtists.find(pa => pa.name === fa.name)).slice(0, needed);
-            parsedArtists = [...parsedArtists, ...padding];
-          }
-          
           setFeaturedArtists(parsedArtists);
         } else {
-          setFeaturedArtists(FEATURED_ARTISTS.slice(0, 15));
+          const { data: anyData, error: anyError } = await supabase
+            .from('artists')
+            .select('*, artist_images(image_url)')
+            .eq('is_live', true)
+            .limit(6);
+            
+          if (anyData && anyData.length > 0) {
+            let parsedAny = anyData.map(artist => ({
+              name: artist.alias || artist.name,
+              genre: artist.sub_category || artist.category || 'Performer',
+              bookings: `${artist.successful_bookings || Math.floor(Math.random() * 50) + 50} bookings`,
+              rating: artist.rating || '4.9',
+              image: artist.artist_images?.[0]?.image_url || '/assets/lux-singer-session.webp',
+              city: artist.city || 'India'
+            }));
+            setFeaturedArtists(parsedAny);
+          } else {
+            setFeaturedArtists(FEATURED_ARTISTS.slice(0, 15));
+          }
         }
       } catch (err) {
         console.error('Error fetching featured artists:', err);
@@ -206,9 +219,6 @@ function FeaturedArtistsSection() {
                     style={{ objectFit: 'cover' }}
                     quality={100}
                   />
-                  <div className="hp-feat-overlay-v2">
-                    <span className="hp-live-badge">VIEW PROFILE</span>
-                  </div>
                 </div>
                 <div className="hp-feat-info-v2">
                   <span className="hp-feat-genre-v2">{artist.genre}</span>
@@ -220,20 +230,7 @@ function FeaturedArtistsSection() {
                     <span className="hp-feat-score-v2">{artist.rating} · 146 bookings</span>
                   </div>
 
-                  <div className="hp-feat-btn-grid">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        window.dispatchEvent(new CustomEvent('open-contact-modal', {
-                          detail: { type: 'booking', artist: artist }
-                        }));
-                      }}
-                      className="hp-btn-book-v2"
-                      style={{ gridColumn: '1 / -1' }}
-                    >
-                      BOOK THIS ARTIST
-                    </button>
-                  </div>
+
                 </div>
               </TiltCard>
             </motion.div>
