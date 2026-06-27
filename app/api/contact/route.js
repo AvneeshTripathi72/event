@@ -122,22 +122,9 @@ ${artistDetailsString}${planDetailsString}${serviceDetailsString}
     }
 
 
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: process.env.EMAIL_USER,
-      subject: `${subjectPrefix} - ${data.name}`,
-      text: emailBody,
-    };
+    let bookingId = null;
 
-
-    try {
-      await transporter.sendMail(mailOptions);
-      console.log("Email dispatched successfully.");
-    } catch (err) {
-      console.error("Email sending error:", err);
-    }
-
-   
+    // 1. Insert into Supabase if it's a booking
     if (!isRegister && !isCallRequest) {
       try {
         const { createClient } = require('@supabase/supabase-js');
@@ -176,12 +163,48 @@ ${artistDetailsString}${planDetailsString}${serviceDetailsString}
           bookingData.fk_artist_id = data.selectedArtist.id;
         }
 
-        const { error } = await supabase.from('bookings').insert([bookingData]);
-        if (error) console.error("Supabase insert error:", error);
-        else console.log("Successfully saved booking to Supabase");
+        const { data: insertedData, error } = await supabase.from('bookings').insert([bookingData]).select().single();
+        if (error) {
+          console.error("Supabase insert error:", error);
+        } else {
+          console.log("Successfully saved booking to Supabase");
+          bookingId = insertedData.id;
+        }
       } catch (dbErr) {
         console.error("Failed to connect to Supabase:", dbErr);
       }
+    }
+
+    // 2. Prepare HTML Email body with action buttons if bookingId exists
+    let htmlBody = `<div style="font-family: sans-serif; white-space: pre-wrap;">${emailBody}</div>`;
+    if (bookingId) {
+      const adminUrl = process.env.NEXT_PUBLIC_ADMIN_URL || 'http://localhost:9002';
+      const approveLink = `${adminUrl}/api/action-request?id=${bookingId}&type=client_request&action=approve`;
+      const rejectLink = `${adminUrl}/api/action-request?id=${bookingId}&type=client_request&action=reject`;
+      const previewLink = `${adminUrl}/dashboard/requests`;
+
+      htmlBody += `
+        <div style="margin-top: 24px; display: flex; gap: 12px; font-family: sans-serif;">
+          <a href="${approveLink}" style="display: inline-block; background-color: #10b981; color: #ffffff; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px;">Approve Booking</a>
+          <a href="${rejectLink}" style="display: inline-block; background-color: #ef4444; color: #ffffff; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px; margin-left: 10px;">Reject</a>
+          <a href="${previewLink}" style="display: inline-block; background-color: #f1f5f9; color: #475569; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px; border: 1px solid #cbd5e1; margin-left: 10px;">Preview</a>
+        </div>
+      `;
+    }
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: process.env.EMAIL_USER,
+      subject: `${subjectPrefix} - ${data.name}`,
+      text: emailBody,
+      html: htmlBody,
+    };
+
+    try {
+      await transporter.sendMail(mailOptions);
+      console.log("Email dispatched successfully.");
+    } catch (err) {
+      console.error("Email sending error:", err);
     }
 
     return new Response(JSON.stringify({ success: true, message: 'Request processed successfully!' }), {
