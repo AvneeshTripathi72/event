@@ -128,7 +128,7 @@ export default function TrackRequestPage() {
                       <Search className="h-8 w-8 text-slate-500" />
                     </div>
                     <h3 className="text-xl font-bold text-white mb-2">No Requests Found</h3>
-                    <p className="text-slate-400">We couldn't find any booking requests associated with <strong className="text-slate-300">{email}</strong>.</p>
+                    <p className="text-slate-400">We couldn&apos;t find any booking requests associated with <strong className="text-slate-300">{email}</strong>.</p>
                   </div>
                 ) : (
                   <div className="space-y-6">
@@ -150,12 +150,12 @@ export default function TrackRequestPage() {
                           className="p-6 md:p-8 bg-slate-900/50 backdrop-blur-md border border-slate-800 hover:border-slate-700 rounded-3xl transition-all shadow-xl group relative overflow-hidden"
                         >
                           {/* Status line indicator */}
-                          <div className={\`absolute left-0 top-0 bottom-0 w-1 \${status.color.split(' ')[0].replace('/10', '')}\`} />
+                          <div className={`absolute left-0 top-0 bottom-0 w-1 ${status.color.split(' ')[0].replace('/10', '')}`} />
                           
                           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                             <div className="space-y-4 flex-1">
                               <div className="flex flex-wrap items-center gap-3">
-                                <span className={\`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border \${status.color}\`}>
+                                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${status.color}`}>
                                   <Icon className="h-3.5 w-3.5" />
                                   {status.label}
                                 </span>
